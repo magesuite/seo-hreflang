@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<config 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="magesuite" translate="label" sortOrder="300">
+            <label>MageSuite</label>
+        </tab>
+        <section id="seo" translate="label" type="text" sortOrder="300" showInDefault="1">
+            <label>SEO</label>
+            <tab>magesuite</tab>
+            <resource>MageSuite_SeoHreflang::config_seo</resource>
+            <group id="configuration" translate="label" type="text" sortOrder="1" showInDefault="1">
+                <label>Configuration</label>
+                <field id="hreflang_tags_enabled" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Hreflang Tags</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>
+                        <![CDATA[Hreflang tags help the search engines to select best language version of the shop for incoming users. <a href="https://support.google.com/webmasters/answer/189077" target="_blank" rel=”noopener”>Read more</a>.]]>
+                    </comment>
+                </field>
+                <field id="x_default" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>X-Default</label>
+                    <source_model>MageSuite\SeoHreflang\Model\Source\XDefault</source_model>
+                    <comment>
+                        <![CDATA[Tells which storeview should be recommended for international audience. <a href="https://webmasters.googleblog.com/2013/04/x-default-hreflang-for-international-pages.html" target="_blank" rel=”noopener”>Read more</a>.]]>
+                    </comment>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

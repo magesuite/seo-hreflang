@@ -1,0 +1,22 @@
+<?php
+/**
+ * Adds hreflang tags for language and regional URLs used by search engines.
+ *
+ * @see https://support.google.com/webmasters/answer/189077
+ * @see https://jira.pluswerk.ag/browse/ROL-140
+ */
+?>
+<?php
+if ($block->isEnabled()):
+
+foreach ($block->getStoresData() as $storeData): ?>
+    <link rel="alternate" href="<?= $storeData['url']; ?>" hreflang="<?= $storeData['code']; ?>">
+<?php endforeach;
+
+$xDefaultUrl = $block->getXDefaultUrl();
+if ($xDefaultUrl): ?>
+    <link rel="alternate" href="<?= $xDefaultUrl ?>" hreflang="x-default">
+<?php 
+endif;
+
+endif;
