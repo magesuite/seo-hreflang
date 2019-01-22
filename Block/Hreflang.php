@@ -2,15 +2,12 @@
 
 namespace MageSuite\SeoHreflang\Block;
 
-use Magento\Store\Model\Store;
-
 class Hreflang extends \Magento\Framework\View\Element\Template
 {
     protected $_template = 'MageSuite_SeoHreflang::hreflang.phtml';
 
     const SEO_HREFLANG_TAGS_PATH = 'seo/configuration/hreflang_tags_enabled';
     const SEO_X_DEFAULT_PATH = 'seo/configuration/x_default';
-
 
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
@@ -61,17 +58,7 @@ class Hreflang extends \Magento\Framework\View\Element\Template
         $stores = $this->storeManager->getStores();
         foreach ($stores as $store) {
             $hreflangCode = $store->getHreflangCode() ? $store->getHreflangCode() : str_replace('_', '-', $store->getCode());
-            $url = $store->getCurrentUrl(false);
-            $queryValue = $this->request->getQueryValue();
-            $urlRewrite = $this->urlFinder->findOneByData([
-                'target_path' => trim($this->request->getPathInfo(), '/'),
-                'store_id' => $store->getId()
-            ]);
-            if ($urlRewrite) {
-                $query = $queryValue ? '?' . http_build_query($queryValue, '', '&amp;') : '';
-                $url = $this->urlBuilder->getUrl($store->getBaseUrl() . $urlRewrite->getRequestPath() . $query);
-                $url = trim($url, '/');
-            }
+            $url = $this->getCurrentUrl($store);
             $storesData[] = [
                 'url' => $url,
                 /**
@@ -105,6 +92,24 @@ class Hreflang extends \Magento\Framework\View\Element\Template
 
         $store = $this->storeManager->getStore($xDefaultStoreId);
 
-        return $store->getCurrentUrl(false);
+        return $this->getCurrentUrl($store);
     }
+
+    private function getCurrentUrl($store){
+        $url = $store->getCurrentUrl(false);
+
+        $queryValue = $this->request->getQueryValue();
+        $urlRewrite = $this->urlFinder->findOneByData([
+            'target_path' => trim($this->request->getPathInfo(), '/'),
+            'store_id' => $store->getId()
+        ]);
+        if ($urlRewrite) {
+            $query = $queryValue ? '?' . http_build_query($queryValue, '', '&amp;') : '';
+            $url = $this->urlBuilder->getUrl($store->getBaseUrl() . $urlRewrite->getRequestPath() . $query);
+            $url = trim($url, '/');
+        }
+
+        return $url;
+    }
+
 }
