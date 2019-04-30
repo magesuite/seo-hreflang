@@ -25,7 +25,8 @@ class Store extends \Magento\Backend\Block\System\Store\Edit\Form\Store
                 'label' => __('Hreflang Code'),
                 'value' => $storeModel->getHreflangCode(),
                 'required' => false,
-                'class' => 'cs-csfeature__logo'
+                'class' => 'cs-csfeature__logo',
+                'note' => 'The value like x-default, en, de-CH. Learn more on: <a href="https://support.google.com/webmasters/answer/189077">https://support.google.com/webmasters/answer/189077</a>'
             ]
         );
     }
