@@ -9,14 +9,6 @@
 <?php
 if ($block->isEnabled()):
 
-foreach ($block->getStoresData() as $storeData): ?>
-    <link rel="alternate" href="<?= $storeData['url']; ?>" hreflang="<?= $storeData['code']; ?>">
-<?php endforeach;
-
-$xDefaultUrl = $block->getXDefaultUrl();
-if ($xDefaultUrl): ?>
-    <link rel="alternate" href="<?= $xDefaultUrl ?>" hreflang="x-default">
-<?php 
-endif;
-
-endif;
+foreach ($block->getAlternateLinks() as $alternateLink): ?>
+    <link rel="alternate" href="<?= $alternateLink->getUrl(); ?>" hreflang="<?= $alternateLink->getCode(); ?>">
+<?php endforeach; endif; ?>
