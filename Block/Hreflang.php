@@ -6,110 +6,151 @@ class Hreflang extends \Magento\Framework\View\Element\Template
 {
     protected $_template = 'MageSuite_SeoHreflang::hreflang.phtml';
 
-    const SEO_HREFLANG_TAGS_PATH = 'seo/configuration/hreflang_tags_enabled';
-    const SEO_X_DEFAULT_PATH = 'seo/configuration/x_default';
-
-    /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
-     */
-    protected $scopeConfig;
+    const X_DEFAULT = 'x-default';
+    const QUERY_SEPARATOR = '&amp;';
 
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     protected $storeManager;
+
     /**
      * @var \Magento\Framework\UrlInterface
      */
-    private $urlBuilder;
-    /**
-     * @var \Magento\UrlRewrite\Model\UrlFinderInterface
-     */
-    private $urlFinder;
+    protected $urlBuilder;
+
     /**
      * @var \Magento\Framework\App\RequestInterface
      */
-    private $request;
+    protected $request;
+
+    /**
+     * @var \MageSuite\SeoHreflang\Helper\Configuration
+     */
+    protected $configuration;
+
+    /**
+     * @var \MageSuite\SeoHreflang\Model\EntityPool
+     */
+    protected $entityPool;
 
     public function __construct(
-        \Magento\Framework\Registry $registry,
         \Magento\Framework\View\Element\Template\Context $context,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\UrlInterface $urlBuilder,
-        \Magento\UrlRewrite\Model\UrlFinderInterface $urlFinder,
         \Magento\Framework\App\RequestInterface $request,
+        \MageSuite\SeoHreflang\Helper\Configuration $configuration,
+        \MageSuite\SeoHreflang\Model\EntityPool $entityPool,
         array $data = []
-    )
-    {
+    ){
         parent::__construct($context, $data);
 
-        $this->scopeConfig = $scopeConfig;
         $this->storeManager = $storeManager;
         $this->urlBuilder = $urlBuilder;
-        $this->urlFinder = $urlFinder;
         $this->request = $request;
+        $this->configuration = $configuration;
+        $this->entityPool = $entityPool;
     }
 
-    public function getStoresData()
+    public function getAlternateLinks()
     {
-        $storesData = [];
+        $alternateLinks = [];
 
-        $stores = $this->storeManager->getStores();
-        foreach ($stores as $store) {
-            $hreflangCode = $store->getHreflangCode() ? $store->getHreflangCode() : str_replace('_', '-', $store->getCode());
-            $url = $this->getCurrentUrl($store);
-            $storesData[] = [
-                'url' => $url,
-                /**
-                 * It is required that language and region codes are separated by dash "-"
-                 * instead of underscore "_" which Magento returns.
-                 */
-                'code' => $hreflangCode
-            ];
+        /** @var \MageSuite\SeoHreflang\Model\Entity\EntityInterface $entity */
+        $entity = $this->entityPool->getEntity();
+
+        if(empty($entity)){
+            return $alternateLinks;
         }
 
-        return $storesData;
+        $stores = $this->storeManager->getStores();
+
+        foreach ($stores as $store) {
+
+            if(!$entity->isActive($store)){
+                continue;
+            }
+
+            $alternateLink = $this->getAlternateLink($entity, $store);
+
+            if(empty($alternateLink)){
+                continue;
+            }
+
+            $alternateLinks[$store->getId()] = $this->getAlternateLink($entity, $store);
+        }
+
+        $this->addXDefaultUrl($alternateLinks);
+
+        return $alternateLinks;
     }
 
     public function isEnabled()
     {
-        return $this->scopeConfig->getValue(
-            self::SEO_HREFLANG_TAGS_PATH,
-            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE
-        );
+        return $this->configuration->isEnabled();
     }
 
-    public function getXDefaultUrl()
+    protected function getAlternateLink(\MageSuite\SeoHreflang\Model\Entity\EntityInterface $entity, $store)
     {
-        $xDefaultStoreId = $this->scopeConfig->getValue(
-            self::SEO_X_DEFAULT_PATH,
-            \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE
-        );
-        if ($xDefaultStoreId < 0) {
+        $url = $entity->getUrl($store);
+
+        if(empty($url)){
             return null;
         }
 
-        $store = $this->storeManager->getStore($xDefaultStoreId);
+        $this->addQueryToUrl($url);
 
-        return $this->getCurrentUrl($store);
+        $alternateLink = [
+            'url' => $url,
+            'code' => $this->getHreflangCode($store)
+        ];
+
+        return new \Magento\Framework\DataObject($alternateLink);
     }
 
-    private function getCurrentUrl($store){
-        $url = $store->getCurrentUrl(false);
+    /**
+     * It is required that language and region codes are separated by dash "-"
+     * instead of underscore "_" which Magento returns.
+     *
+     * @param \Magento\Store\Model\Store $store
+     * @return string
+     */
+    protected function getHreflangCode($store)
+    {
+        return $store->getHreflangCode() ? $store->getHreflangCode() : str_replace('_', '-', $store->getCode());
+    }
 
-        $queryValue = $this->request->getQueryValue();
-        $urlRewrite = $this->urlFinder->findOneByData([
-            'target_path' => trim($this->request->getPathInfo(), '/'),
-            'store_id' => $store->getId()
-        ]);
-        if ($urlRewrite) {
-            $query = $queryValue ? '?' . http_build_query($queryValue, '', '&amp;') : '';
-            $url = $this->urlBuilder->getUrl($store->getBaseUrl() . $urlRewrite->getRequestPath() . $query);
-            $url = trim($url, '/');
+    protected function addXDefaultUrl(&$alternateLinks)
+    {
+        $xDefaultStoreId = $this->configuration->getXDefaultStoreId();
+
+        if ($xDefaultStoreId < 0) {
+            return;
         }
 
-        return $url;
+        if(!isset($alternateLinks[$xDefaultStoreId])){
+            return;
+        }
+
+        $xDefaultLink = clone $alternateLinks[$xDefaultStoreId];
+        $xDefaultLink->setCode(self::X_DEFAULT);
+
+        $alternateLinks[self::X_DEFAULT] = $xDefaultLink;
     }
 
+    protected function addQueryToUrl(&$url)
+    {
+        $queryValue = $this->request->getQueryValue();
+
+        if(empty($queryValue)){
+            return;
+        }
+
+        $query = http_build_query($queryValue, '', self::QUERY_SEPARATOR);
+
+        $urlWithQuery = sprintf('%s?%s', $url, $query);
+
+        $url = $this->urlBuilder->getUrl($urlWithQuery);
+        $url = trim($url, '/');
+    }
 }
