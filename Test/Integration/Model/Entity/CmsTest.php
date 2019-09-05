@@ -45,13 +45,13 @@ class CmsTest extends \PHPUnit\Framework\TestCase
 
         $this->store->setId(1);
         $this->assertTrue($cmsPageEntity->isActive($this->store));
-        $this->assertEquals('page_in_default_store', $cmsPageEntity->getUrl($this->store));
+        $this->assertEquals('http://localhost/index.php/page_in_default_store', $cmsPageEntity->getUrl($this->store));
 
         $secondStoreId = $this->store->load('second', 'code')->getId();
         $this->store->setId($secondStoreId);
 
         $this->assertTrue($cmsPageEntity->isActive($this->store));
-        $this->assertEquals('page_in_second_store', $cmsPageEntity->getUrl($this->store));
+        $this->assertEquals('http://localhost/index.php/page_in_second_store', $cmsPageEntity->getUrl($this->store));
 
         $page = $this->pageRepository->getById('disabled_page');
         $cmsPageEntity = $this->objectManager->create(
