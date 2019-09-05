@@ -16,12 +16,19 @@ class CmsPage implements EntityInterface
      */
     protected $pageCollectionFactory;
 
+    /**
+     * @var \MageSuite\SeoHreflang\Helper\Configuration
+     */
+    protected $configuration;
+
     public function __construct(
         \Magento\Cms\Api\Data\PageInterface $page,
-        \Magento\Cms\Model\ResourceModel\Page\CollectionFactory $pageCollectionFactory
+        \Magento\Cms\Model\ResourceModel\Page\CollectionFactory $pageCollectionFactory,
+        \MageSuite\SeoHreflang\Helper\Configuration $configuration
     ){
         $this->pageCollectionFactory = $pageCollectionFactory;
         $this->page = $page;
+        $this->configuration = $configuration;
     }
 
     public function isApplicable()
@@ -47,8 +54,15 @@ class CmsPage implements EntityInterface
         if(empty($page)){
             return null;
         }
+        $defaultHomepageId = $this->configuration->getDefaultHomepageId();
 
-        return $page->getIdentifier();
+        $url = $store->getBaseUrl();
+
+        if($defaultHomepageId != $page->getIdentifier()) {
+            $url .= $page->getIdentifier();
+        }
+
+        return $url;
     }
 
     protected function getPage($store)
