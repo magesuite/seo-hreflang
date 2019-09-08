@@ -77,7 +77,7 @@ class Hreflang extends \Magento\Framework\View\Element\Template
                 continue;
             }
 
-            $alternateLinks[$store->getId()] = $this->getAlternateLink($entity, $store);
+            $alternateLinks[$store->getId()] = $alternateLink;
         }
 
         $this->addXDefaultUrl($alternateLinks);
@@ -148,7 +148,11 @@ class Hreflang extends \Magento\Framework\View\Element\Template
 
         $query = http_build_query($queryValue, '', self::QUERY_SEPARATOR);
 
-        $urlWithQuery = sprintf('%s?%s', $url, $query);
+        $splitedUrl = parse_url($url);
+
+        $rawUrl = $splitedUrl['scheme'] . '://' . $splitedUrl['host'] . $splitedUrl['path'];
+
+        $urlWithQuery = sprintf('%s?%s', $rawUrl, $query);
 
         $url = $this->urlBuilder->getUrl($urlWithQuery);
         $url = trim($url, '/');
