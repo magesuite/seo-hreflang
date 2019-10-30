@@ -42,7 +42,7 @@ class Hreflang extends \Magento\Framework\View\Element\Template
         \MageSuite\SeoHreflang\Helper\Configuration $configuration,
         \MageSuite\SeoHreflang\Model\EntityPool $entityPool,
         array $data = []
-    ){
+    ) {
         parent::__construct($context, $data);
 
         $this->storeManager = $storeManager;
@@ -59,21 +59,20 @@ class Hreflang extends \Magento\Framework\View\Element\Template
         /** @var \MageSuite\SeoHreflang\Model\Entity\EntityInterface $entity */
         $entity = $this->entityPool->getEntity();
 
-        if(empty($entity)){
+        if (empty($entity)) {
             return $alternateLinks;
         }
 
         $stores = $this->storeManager->getStores();
 
         foreach ($stores as $store) {
-
-            if(!$entity->isActive($store)){
+            if (!$entity->isActive($store)) {
                 continue;
             }
 
             $alternateLink = $this->getAlternateLink($entity, $store);
 
-            if(empty($alternateLink)){
+            if (empty($alternateLink)) {
                 continue;
             }
 
@@ -94,11 +93,11 @@ class Hreflang extends \Magento\Framework\View\Element\Template
     {
         $url = $entity->getUrl($store);
 
-        if(empty($url)){
+        if (empty($url)) {
             return null;
         }
 
-        $this->addQueryToUrl($url);
+        $url = $this->addQueryToUrl($url);
 
         $alternateLink = [
             'url' => $url,
@@ -128,7 +127,7 @@ class Hreflang extends \Magento\Framework\View\Element\Template
             return;
         }
 
-        if(!isset($alternateLinks[$xDefaultStoreId])){
+        if (!isset($alternateLinks[$xDefaultStoreId])) {
             return;
         }
 
@@ -138,12 +137,12 @@ class Hreflang extends \Magento\Framework\View\Element\Template
         $alternateLinks[self::X_DEFAULT] = $xDefaultLink;
     }
 
-    protected function addQueryToUrl(&$url)
+    public function addQueryToUrl($url)
     {
         $queryValue = $this->request->getQueryValue();
 
-        if(empty($queryValue)){
-            return;
+        if (empty($queryValue)) {
+            return $url;
         }
 
         $query = http_build_query($queryValue, '', self::QUERY_SEPARATOR);
@@ -156,5 +155,7 @@ class Hreflang extends \Magento\Framework\View\Element\Template
 
         $url = $this->urlBuilder->getUrl($urlWithQuery);
         $url = trim($url, '/');
+
+        return $url;
     }
 }
