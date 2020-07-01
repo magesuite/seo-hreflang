@@ -7,42 +7,49 @@ class Store
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
-    private $storeManager;
+    protected $storeManager;
     /**
      * @var \Magento\Framework\Session\SidResolverInterface
      */
-    private $sidResolver;
+    protected $sidResolver;
     /**
      * @var \Magento\Framework\App\RequestInterface
      */
-    private $request;
+    protected $request;
     /**
      * @var \Magento\Framework\UrlInterface
      */
-    private $url;
+    protected $url;
     /**
      * @var \Magento\Framework\Session\SessionManagerInterface
      */
-    private $session;
+    protected $session;
+    /**
+     * @var \Magento\Framework\App\ProductMetadataInterface
+     */
+    protected $productMetadata;
 
     public function __construct(
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\Session\SidResolverInterface $sidResolver,
         \Magento\Framework\App\RequestInterface $request,
         \Magento\Framework\UrlInterface $url,
-        \Magento\Framework\Session\SessionManagerInterface $session
-    )
-    {
+        \Magento\Framework\Session\SessionManagerInterface $session,
+        \Magento\Framework\App\ProductMetadataInterface $productMetadata
+    ) {
         $this->storeManager = $storeManager;
         $this->sidResolver = $sidResolver;
         $this->request = $request;
         $this->url = $url;
         $this->session = $session;
+        $this->productMetadata = $productMetadata;
     }
 
     public function aroundGetCurrentUrl(\Magento\Store\Model\Store $subject, callable $proceed, $fromStore = true)
     {
-        $sidQueryParam = $this->sidResolver->getSessionIdQueryParam($this->_getSession($subject->getCode()));
+        if (version_compare($this->productMetadata->getVersion(), '2.3.5', '<')) {
+            $sidQueryParam = $this->sidResolver->getSessionIdQueryParam($this->_getSession($subject->getCode()));
+        }
 
         $requestString = $this->url->escape(
             preg_replace(
@@ -65,7 +72,7 @@ class Store
         }
 
         $currQuery = $this->request->getQueryValue();
-        if (isset($currQuery[$sidQueryParam])
+        if (isset($sidQueryParam)
             && !empty($currQuery[$sidQueryParam])
             && $this->_getSession($subject->getCode())->getSessionIdForHost($storeUrl) != $currQuery[$sidQueryParam]
         ) {
