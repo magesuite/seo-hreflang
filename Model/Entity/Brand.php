@@ -21,21 +21,14 @@ class Brand implements EntityInterface
      */
     protected $registry;
 
-    /**
-     * @var \MageSuite\BrandManagement\Model\ResourceModel\Brands
-     */
-    protected $brandResourceModel;
-
     public function __construct(
         \Magento\UrlRewrite\Model\UrlFinderInterface $urlFinder,
         \Magento\Framework\App\RequestInterface $request,
-        \Magento\Framework\Registry $registry,
-        \MageSuite\BrandManagement\Model\ResourceModel\Brands $brandResourceModel
+        \Magento\Framework\Registry $registry
     ) {
         $this->urlFinder = $urlFinder;
         $this->request = $request;
         $this->registry = $registry;
-        $this->brandResourceModel = $brandResourceModel;
     }
 
     public function isApplicable()
@@ -52,12 +45,13 @@ class Brand implements EntityInterface
             return true;
         }
         $brand = $this->registry->registry(self::BRAND_REGISTRY_KEY);
-        if (!$brand instanceof \MageSuite\BrandManagement\Model\Brands) {
+        if ($brand === null) {
             return false;
         }
-        $isEnabled = $this->brandResourceModel->getAttributeRawValue($brand->getEntityId(), 'enabled', $store->getId());
+        $brandResource = $brand->getResource();
+        $isEnabled = $brandResource->getAttributeRawValue($brand->getEntityId(), 'enabled', $store->getId());
         if ($isEnabled === false) {
-            $isEnabled = $this->brandResourceModel->getAttributeRawValue($brand->getEntityId(), 'enabled', \Magento\Store\Model\Store::DEFAULT_STORE_ID);
+            $isEnabled = $brandResource->getAttributeRawValue($brand->getEntityId(), 'enabled', \Magento\Store\Model\Store::DEFAULT_STORE_ID);
         }
         return boolval($isEnabled);
     }
