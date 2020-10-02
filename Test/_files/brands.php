@@ -1,5 +1,5 @@
 <?php
-if (interface_exists(\MageSuite\BrandManagement\Api\BrandsRepositoryInterface::class)) {
+if (interface_exists('MageSuite\BrandManagement\Api\BrandsRepositoryInterface')) {
     $brandRepository = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->create('MageSuite\BrandManagement\Api\BrandsRepositoryInterface');
 
     $brand = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->create('MageSuite\BrandManagement\Model\Brands');

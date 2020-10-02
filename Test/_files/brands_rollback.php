@@ -1,5 +1,5 @@
 <?php
-if (interface_exists(\MageSuite\BrandManagement\Api\BrandsRepositoryInterface::class)) {
+if (interface_exists('MageSuite\BrandManagement\Api\BrandsRepositoryInterface')) {
     /** @var \Magento\Framework\Registry $registry */
     $objectManager = \Magento\TestFramework\Helper\Bootstrap::getObjectManager();
 

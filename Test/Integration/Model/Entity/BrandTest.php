@@ -30,7 +30,7 @@ class BrandTest extends \PHPUnit\Framework\TestCase
 
     public function setUp(): void
     {
-        if (!interface_exists(\MageSuite\BrandManagement\Api\BrandsRepositoryInterface::class)) {
+        if (!interface_exists('MageSuite\BrandManagement\Api\BrandsRepositoryInterface')) {
             $this->markTestSkipped('Skipped because Brand Management module is not present');
         }
         $this->objectManager = \Magento\TestFramework\ObjectManager::getInstance();
