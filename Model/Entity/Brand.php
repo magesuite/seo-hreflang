@@ -64,9 +64,7 @@ class Brand implements EntityInterface
             return $url;
         }
         $this->emulation->startEnvironmentEmulation($store->getStoreId(), \Magento\Framework\App\Area::AREA_FRONTEND, true);
-        if ($brand !== null) {
-            $url = $brand->getBrandUrl();
-        }
+        $url = $brand->getBrandUrl();
         $this->emulation->stopEnvironmentEmulation();
         return $url;
     }
