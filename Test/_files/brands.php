@@ -1,5 +1,29 @@
 <?php
 if (interface_exists('MageSuite\BrandManagement\Api\BrandsRepositoryInterface')) {
+    $store = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->create('Magento\Store\Model\Store');
+    if (!$store->load('second', 'code')->getId()) {
+        $websiteId = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->get(
+            'Magento\Store\Model\StoreManagerInterface'
+        )->getWebsite()->getId();
+        $groupId = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->get(
+            'Magento\Store\Model\StoreManagerInterface'
+        )->getWebsite()->getDefaultGroupId();
+        $store->setCode(
+            'second'
+        )->setWebsiteId(
+            $websiteId
+        )->setGroupId(
+            $groupId
+        )->setName(
+            'Second Store View'
+        )->setSortOrder(
+            10
+        )->setIsActive(
+            1
+        );
+        $store->save();
+    }
+
     $brandRepository = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->create('MageSuite\BrandManagement\Api\BrandsRepositoryInterface');
 
     $brand = \Magento\TestFramework\Helper\Bootstrap::getObjectManager()->create('MageSuite\BrandManagement\Model\Brands');
