@@ -7,11 +7,6 @@ class Brand implements EntityInterface
     const BRAND_REGISTRY_KEY = 'current_brand';
 
     /**
-     * @var \Magento\Store\Model\App\Emulation
-     */
-    protected $emulation;
-
-    /**
      * @var \Magento\Framework\App\RequestInterface
      */
     protected $request;
@@ -22,11 +17,9 @@ class Brand implements EntityInterface
     protected $registry;
 
     public function __construct(
-        \Magento\Store\Model\App\Emulation $emulation,
         \Magento\Framework\App\RequestInterface $request,
         \Magento\Framework\Registry $registry
     ) {
-        $this->emulation = $emulation;
         $this->request = $request;
         $this->registry = $registry;
     }
@@ -58,15 +51,11 @@ class Brand implements EntityInterface
 
     public function getUrl($store)
     {
-        $url = $store->getCurrentUrl(false);
         $brand = $this->registry->registry(self::BRAND_REGISTRY_KEY);
         if ($brand === null) {
-            return $url;
+            return $store->getCurrentUrl(false);
         }
-        $this->emulation->startEnvironmentEmulation($store->getStoreId(), \Magento\Framework\App\Area::AREA_FRONTEND, true);
-        $url = $brand->getBrandUrl();
-        $this->emulation->stopEnvironmentEmulation();
-        return $url;
+        return $brand->getBrandUrl($store);
     }
 
     protected function isBrandIndexPage()

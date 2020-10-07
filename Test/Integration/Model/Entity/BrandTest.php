@@ -14,11 +14,6 @@ class BrandTest extends \PHPUnit\Framework\TestCase
     protected $registry;
 
     /**
-     * @var \Magento\Store\Model\Store
-     */
-    protected $store;
-
-    /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     protected $storeManager;
@@ -40,7 +35,6 @@ class BrandTest extends \PHPUnit\Framework\TestCase
         }
         $this->objectManager = \Magento\TestFramework\ObjectManager::getInstance();
         $this->registry = $this->objectManager->get(\Magento\Framework\Registry::class);
-        $this->store = $this->objectManager->create(\Magento\Store\Model\Store::class);
         $this->storeManager = $this->objectManager->get(\Magento\Store\Model\StoreManagerInterface::class);
         $this->brandRepository = $this->objectManager->get(\MageSuite\BrandManagement\Api\BrandsRepositoryInterface::class);
         $this->brandEntity = $this->objectManager->get(\MageSuite\SeoHreflang\Model\Entity\Brand::class);
@@ -54,6 +48,8 @@ class BrandTest extends \PHPUnit\Framework\TestCase
      */
     public function testItReturnsCorrectData()
     {
+        $store = $this->storeManager->getStore('default');
+
         $activeBrand = $this->brandRepository->getById(1989);
         $disabledBrand = $this->brandRepository->getById(1991);
 
@@ -61,8 +57,8 @@ class BrandTest extends \PHPUnit\Framework\TestCase
         $this->registry->register('current_brand', $activeBrand);
 
         $this->assertTrue($this->brandEntity->isApplicable());
-        $this->assertTrue($this->brandEntity->isActive($this->store));
-        $this->assertEquals('http://localhost/index.php/default/brands/enabled-brand', $this->brandEntity->getUrl($this->store));
+        $this->assertTrue($this->brandEntity->isActive($store));
+        $this->assertEquals('http://localhost/index.php/default/brands/enabled-brand', $this->brandEntity->getUrl($store));
 
         $secondStore = $this->storeManager->getStore('second');
 
@@ -71,7 +67,7 @@ class BrandTest extends \PHPUnit\Framework\TestCase
         $this->registry->unregister('current_brand');
 
         $this->registry->register('current_brand', $disabledBrand);
-        $this->assertFalse($this->brandEntity->isActive($this->store));
+        $this->assertFalse($this->brandEntity->isActive($store));
         $this->registry->unregister('current_brand');
     }
 
