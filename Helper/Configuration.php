@@ -17,7 +17,8 @@ class Configuration extends \Magento\Framework\App\Helper\AbstractHelper
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfigInterface
-    ) {
+    )
+    {
         parent::__construct($context);
 
         $this->scopeConfig = $scopeConfigInterface;
@@ -33,9 +34,14 @@ class Configuration extends \Magento\Framework\App\Helper\AbstractHelper
         return $this->getConfig()->getXDefault();
     }
 
+    public function getHreflangScope()
+    {
+        return $this->getConfig()->getHreflangScope();
+    }
+
     protected function getConfig()
     {
-        if($this->config === null){
+        if ($this->config === null) {
             $config = $this->scopeConfig->getValue(self::XML_PATH_CONFIGURATION_KEY, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
             $this->config = new \Magento\Framework\DataObject($config);
         }
