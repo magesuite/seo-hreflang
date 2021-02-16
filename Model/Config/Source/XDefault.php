@@ -1,6 +1,6 @@
 <?php
 
-namespace MageSuite\SeoHreflang\Model\Source;
+namespace MageSuite\SeoHreflang\Model\Config\Source;
 
 class XDefault implements \Magento\Framework\Option\ArrayInterface
 {

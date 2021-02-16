@@ -6,6 +6,7 @@
             <configuration>
                 <canonical_tag_enabled>0</canonical_tag_enabled>
                 <hreflang_tags_enabled>0</hreflang_tags_enabled>
+                <hreflang_scope>global</hreflang_scope>
                 <x_default>-1</x_default>
             </configuration>
         </seo>

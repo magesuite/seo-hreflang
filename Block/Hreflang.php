@@ -42,7 +42,8 @@ class Hreflang extends \Magento\Framework\View\Element\Template
         \MageSuite\SeoHreflang\Helper\Configuration $configuration,
         \MageSuite\SeoHreflang\Model\EntityPool $entityPool,
         array $data = []
-    ) {
+    )
+    {
         parent::__construct($context, $data);
 
         $this->storeManager = $storeManager;
@@ -63,8 +64,7 @@ class Hreflang extends \Magento\Framework\View\Element\Template
             return $alternateLinks;
         }
 
-        $stores = $this->storeManager->getStores();
-
+        $stores = $this->getStores();
         foreach ($stores as $store) {
             if (!$entity->isActive($store)) {
                 continue;
@@ -87,6 +87,15 @@ class Hreflang extends \Magento\Framework\View\Element\Template
     public function isEnabled()
     {
         return $this->configuration->isEnabled();
+    }
+
+    protected function getStores()
+    {
+        if ($this->configuration->getHreflangScope() === \MageSuite\SeoHreflang\Model\Config\Source\HreflangScope::GLOBAL) {
+            return $this->storeManager->getStores();
+        } else {
+            return $this->storeManager->getGroup()->getStores();
+        }
     }
 
     protected function getAlternateLink(\MageSuite\SeoHreflang\Model\Entity\EntityInterface $entity, $store)
