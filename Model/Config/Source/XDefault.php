@@ -4,15 +4,14 @@ namespace MageSuite\SeoHreflang\Model\Config\Source;
 
 class XDefault implements \Magento\Framework\Option\ArrayInterface
 {
+    const LABEL_FORMAT = '%s | %s (code: %s | ID: %s)';
 
     /**
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     protected $storeManager;
 
-    public function __construct(
-        \Magento\Store\Model\StoreManagerInterface $storeManager
-    )
+    public function __construct(\Magento\Store\Model\StoreManagerInterface $storeManager)
     {
         $this->storeManager = $storeManager;
     }
@@ -27,10 +26,9 @@ class XDefault implements \Magento\Framework\Option\ArrayInterface
             $storeName = $store->getName();
             $storeCode = $store->getCode();
             $storeId = $store->getStoreId();
+            $label =  sprintf(self::LABEL_FORMAT, $websiteName, $storeName, $storeCode, $storeId);
 
-            $value = $websiteName . " | " . $storeName . " (code: " . $storeCode . " | ID: " . $storeId . ")";
-
-            $options[] = ['label' => $value, 'value' => $storeId];
+            $options[] = ['label' => $label, 'value' => $storeId];
         }
 
         return $options;
