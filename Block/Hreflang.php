@@ -107,7 +107,7 @@ class Hreflang extends \Magento\Framework\View\Element\Template
 
         $this->addXDefaultUrl($alternateLinks);
 
-        if ($alternateLinks && $this->configuration->getTranslateHreflangTags()) {
+        if ($alternateLinks && $this->configuration->shouldTranslateHreflangTags()) {
             $this->separator = $this->seoLinkConfiguration->getMultiselectOptionSeparator();
             $alternateLinks = $this->processHreflangUrls($alternateLinks);
         }
