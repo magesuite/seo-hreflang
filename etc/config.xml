@@ -1,10 +1,11 @@
 <?xml version="1.0"?>
-<config 
+<config
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
         <seo>
             <configuration>
                 <canonical_tag_enabled>0</canonical_tag_enabled>
+                <translate_hreflang_tags>0</translate_hreflang_tags>
                 <hreflang_tags_enabled>0</hreflang_tags_enabled>
                 <hreflang_scope>global</hreflang_scope>
                 <x_default>-1</x_default>
