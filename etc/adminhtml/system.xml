@@ -18,13 +18,6 @@
                         <![CDATA[Hreflang tags help the search engines to select best language version of the shop for incoming users. <a href="https://support.google.com/webmasters/answer/189077" target="_blank" rel=”noopener”>Read more</a>.]]>
                     </comment>
                 </field>
-                <field id="translate_hreflang_tags" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Translate Hreflang Tags</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>
-                        <![CDATA[When enabled, hreflang tags URL path will be translated into store scope path.]]>
-                    </comment>
-                </field>
                 <field id="hreflang_scope" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Hreflang Scope</label>
                     <source_model>MageSuite\SeoHreflang\Model\Config\Source\HreflangScope</source_model>

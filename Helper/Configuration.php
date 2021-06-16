@@ -39,11 +39,6 @@ class Configuration extends \Magento\Framework\App\Helper\AbstractHelper
         return $this->getConfig()->getHreflangScope();
     }
 
-    public function shouldTranslateHreflangTags()
-    {
-        return $this->getConfig()->getTranslateHreflangTags();
-    }
-
     protected function getConfig()
     {
         if ($this->config === null) {
