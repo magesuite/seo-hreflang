@@ -34,11 +34,6 @@ class Hreflang extends \Magento\Framework\View\Element\Template
      */
     protected $entityPool;
 
-    /**
-     * @var \MageSuite\SeoHreflang\Model\ResourceModel\FiltrableAttributeOptionValues
-     */
-    protected $filtrableAttributeOptionValues;
-
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
@@ -46,7 +41,6 @@ class Hreflang extends \Magento\Framework\View\Element\Template
         \Magento\Framework\App\RequestInterface $request,
         \MageSuite\SeoHreflang\Helper\Configuration $configuration,
         \MageSuite\SeoHreflang\Model\EntityPool $entityPool,
-        \MageSuite\SeoHreflang\Model\ResourceModel\FiltrableAttributeOptionValues $filtrableAttributeOptionValues,
         array $data = []
     ) {
         parent::__construct($context, $data);
@@ -56,7 +50,6 @@ class Hreflang extends \Magento\Framework\View\Element\Template
         $this->request = $request;
         $this->configuration = $configuration;
         $this->entityPool = $entityPool;
-        $this->filtrableAttributeOptionValues = $filtrableAttributeOptionValues;
     }
 
     public function getAlternateLinks()
@@ -172,27 +165,5 @@ class Hreflang extends \Magento\Framework\View\Element\Template
         $url = trim($url, '/');
 
         return $url;
-    }
-
-    protected function getParameterOptionValuesGrouped($parameters)
-    {
-        $translationsMapped = $this->getParameterOptionValuesFromDb($parameters);
-        $groupedTranslations = [];
-
-        foreach ($translationsMapped as $translation) {
-            if (count($translation) > 1) {
-                foreach ($translation as $storeId => $translated) {
-                    $translatedIndex = strtolower($translated);
-                    $groupedTranslations[$translatedIndex] = $translation;
-                }
-            }
-        }
-
-        return $groupedTranslations;
-    }
-
-    protected function getParameterOptionValuesFromDb($parameters)
-    {
-        return $this->filtrableAttributeOptionValues->getFiltrableOptionValues($parameters);
     }
 }
