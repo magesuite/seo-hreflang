@@ -5,7 +5,6 @@
         <seo>
             <configuration>
                 <canonical_tag_enabled>0</canonical_tag_enabled>
-                <translate_hreflang_tags>0</translate_hreflang_tags>
                 <hreflang_tags_enabled>0</hreflang_tags_enabled>
                 <hreflang_scope>global</hreflang_scope>
                 <x_default>-1</x_default>
