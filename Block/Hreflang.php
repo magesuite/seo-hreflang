@@ -65,6 +65,10 @@ class Hreflang extends \Magento\Framework\View\Element\Template
 
         $stores = $this->getStores();
         foreach ($stores as $store) {
+            if (!$store->getIsActive()) {
+                continue;
+            }
+
             if (!$entity->isActive($store)) {
                 continue;
             }
