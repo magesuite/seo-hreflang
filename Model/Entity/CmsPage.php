@@ -55,10 +55,15 @@ class CmsPage implements EntityInterface
             return null;
         }
 
-        $defaultHomepageId = $this->configuration->getDefaultHomepageId($store->getId());
         $url = $store->getBaseUrl();
+        $homePageIdentifier = $this->configuration->getHomepageIdentifier($store->getId());
+        $homePageDelimiterPosition = strrpos($homePageIdentifier, '|');
 
-        if ($defaultHomepageId != $page->getIdentifier()) {
+        if ($homePageDelimiterPosition) {
+            $homePageIdentifier = substr($homePageIdentifier, 0, $homePageDelimiterPosition);
+        }
+
+        if ($homePageIdentifier != $page->getIdentifier()) {
             $url .= $page->getIdentifier();
         }
 
