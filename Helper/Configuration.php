@@ -7,22 +7,7 @@ class Configuration extends \Magento\Framework\App\Helper\AbstractHelper
     const XML_PATH_CONFIGURATION_KEY = 'seo/configuration';
     const DEFAULT_HOMEPAGE_ID = 'web/default/cms_home_page';
 
-    /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
-     */
-    protected $scopeConfig;
-
     protected $config = null;
-
-    public function __construct(
-        \Magento\Framework\App\Helper\Context $context,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfigInterface
-    )
-    {
-        parent::__construct($context);
-
-        $this->scopeConfig = $scopeConfigInterface;
-    }
 
     public function isEnabled()
     {
@@ -49,8 +34,12 @@ class Configuration extends \Magento\Framework\App\Helper\AbstractHelper
         return $this->config;
     }
 
-    public function getDefaultHomepageId()
+    public function getDefaultHomepageId($storeId = null)
     {
-        return $this->scopeConfig->getValue(self::DEFAULT_HOMEPAGE_ID, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
+        return $this->scopeConfig->getValue(
+            self::DEFAULT_HOMEPAGE_ID,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
     }
 }
