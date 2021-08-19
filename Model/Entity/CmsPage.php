@@ -51,14 +51,14 @@ class CmsPage implements EntityInterface
     {
         $page = $this->getPage($store);
 
-        if(empty($page)){
+        if (empty($page)) {
             return null;
         }
-        $defaultHomepageId = $this->configuration->getDefaultHomepageId();
 
+        $defaultHomepageId = $this->configuration->getDefaultHomepageId($store->getId());
         $url = $store->getBaseUrl();
 
-        if($defaultHomepageId != $page->getIdentifier()) {
+        if ($defaultHomepageId != $page->getIdentifier()) {
             $url .= $page->getIdentifier();
         }
 
@@ -67,11 +67,11 @@ class CmsPage implements EntityInterface
 
     protected function getPage($store)
     {
-        if(in_array($store->getId(), $this->page->getStoreId())){
+        if (in_array($store->getId(), $this->page->getStoreId())) {
             return $this->page;
         }
 
-        if(in_array(self::ALL_STORES_ID, $this->page->getStoreId())){
+        if (in_array(self::ALL_STORES_ID, $this->page->getStoreId())) {
             return $this->page;
         }
 
@@ -91,11 +91,11 @@ class CmsPage implements EntityInterface
     public function getCmsPage($store)
     {
         $collection = $this->pageCollectionFactory->create();
-
         $collection
             ->addFieldToFilter('page_group_identifier', $this->page->getPageGroupIdentifier())
             ->addFieldToFilter('store_id', $store->getId())
-            ->addFieldToSelect(['identifier', 'page_id', 'is_active']);
+            ->addFieldToSelect(['identifier', 'page_id', 'is_active'])
+            ->setPageSize(1);
 
         return $collection->getFirstItem();
     }
