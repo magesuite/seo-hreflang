@@ -5,7 +5,6 @@ namespace MageSuite\SeoHreflang\Helper;
 class Configuration extends \Magento\Framework\App\Helper\AbstractHelper
 {
     const XML_PATH_CONFIGURATION_KEY = 'seo/configuration';
-    const DEFAULT_HOMEPAGE_ID = 'web/default/cms_home_page';
 
     protected $config = null;
 
@@ -34,10 +33,10 @@ class Configuration extends \Magento\Framework\App\Helper\AbstractHelper
         return $this->config;
     }
 
-    public function getDefaultHomepageId($storeId = null)
+    public function getHomepageIdentifier($storeId = null)
     {
         return $this->scopeConfig->getValue(
-            self::DEFAULT_HOMEPAGE_ID,
+            \Magento\Cms\Helper\Page::XML_PATH_HOME_PAGE,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $storeId
         );
