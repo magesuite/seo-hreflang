@@ -92,7 +92,7 @@ class Hreflang extends \Magento\Framework\View\Element\Template
         return $this->configuration->isEnabled();
     }
 
-    protected function getStores()
+    public function getStores()
     {
         if ($this->configuration->getHreflangScope() === \MageSuite\SeoHreflang\Model\Config\Source\HreflangScope::GLOBAL) {
             return $this->storeManager->getStores();
