@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace MageSuite\SeoHreflang\Model\Entity;
 
 class Brand implements EntityInterface
@@ -24,42 +26,63 @@ class Brand implements EntityInterface
         $this->registry = $registry;
     }
 
-    public function isApplicable()
+    public function isApplicable(): bool
     {
         if ($this->isBrandIndexPage()) {
             return true;
         }
-        return $this->registry->registry(self::BRAND_REGISTRY_KEY) ? true : false;
+
+        return (bool)$this->getBrand();
     }
 
-    public function isActive($store)
+    public function isActive(\Magento\Store\Api\Data\StoreInterface $store): bool
     {
         if ($this->isBrandIndexPage()) {
             return true;
         }
-        $brand = $this->registry->registry(self::BRAND_REGISTRY_KEY);
+
+        $brand = $this->getBrand();
+
         if ($brand === null) {
             return false;
         }
+
         $brandResource = $brand->getResource();
-        $isEnabled = $brandResource->getAttributeRawValue($brand->getEntityId(), 'enabled', $store->getId());
+        $isEnabled = $brandResource->getAttributeRawValue(
+            $brand->getEntityId(),
+            'enabled',
+            $store->getId()
+        );
+
         if ($isEnabled === false) {
-            $isEnabled = $brandResource->getAttributeRawValue($brand->getEntityId(), 'enabled', \Magento\Store\Model\Store::DEFAULT_STORE_ID);
+            $isEnabled = $brandResource->getAttributeRawValue(
+                $brand->getEntityId(),
+                'enabled',
+                \Magento\Store\Model\Store::DEFAULT_STORE_ID
+            );
         }
-        return boolval($isEnabled);
+
+        return (bool)$isEnabled;
     }
 
-    public function getUrl($store)
+    public function getUrl(\Magento\Store\Api\Data\StoreInterface $store): string
     {
-        $brand = $this->registry->registry(self::BRAND_REGISTRY_KEY);
+        $brand = $this->getBrand();
+
         if ($brand === null) {
             return $store->getCurrentUrl(false);
         }
+
         return $brand->getBrandUrl($store);
     }
 
-    protected function isBrandIndexPage()
+    protected function isBrandIndexPage(): bool
     {
         return $this->request->getFullActionName() === self::BRANDS_FULL_ACTION_NAME;
+    }
+
+    public function getBrand(): ?\MageSuite\BrandManagement\Model\Brands
+    {
+        return $this->registry->registry(self::BRAND_REGISTRY_KEY);
     }
 }

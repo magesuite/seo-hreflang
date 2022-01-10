@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace MageSuite\SeoHreflang\Model\Config\Source;
 
@@ -16,19 +17,21 @@ class XDefault implements \Magento\Framework\Option\ArrayInterface
         $this->storeManager = $storeManager;
     }
 
-    public function toOptionArray()
+    public function toOptionArray(): array
     {
         $options = [['label' => __('None'), 'value' => '-1']];
-
         $stores = $this->storeManager->getStores();
+
         foreach ($stores as $store) {
             $websiteName = $store->getWebsite()->getName();
             $storeName = $store->getName();
             $storeCode = $store->getCode();
             $storeId = $store->getStoreId();
             $label =  sprintf(self::LABEL_FORMAT, $websiteName, $storeName, $storeCode, $storeId);
-
-            $options[] = ['label' => $label, 'value' => $storeId];
+            $options[] = [
+                'label' => $label,
+                'value' => $storeId
+            ];
         }
 
         return $options;

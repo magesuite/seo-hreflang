@@ -1,9 +1,12 @@
 <?xml version="1.0"?>
-<page 
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
         <referenceBlock name="head.additional">
-            <block class="MageSuite\SeoHreflang\Block\Hreflang" name="link.hreflang" />
+            <block class="Magento\Framework\View\Element\Template" name="link.hreflang" template="MageSuite_SeoHreflang::hreflang.phtml">
+                <arguments>
+                    <argument name="view_model" xsi:type="object">MageSuite\SeoHreflang\ViewModel\Hreflang</argument>
+                </arguments>
+            </block>
         </referenceBlock>
     </body>
 </page>

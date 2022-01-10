@@ -1,11 +1,10 @@
 <?php
+declare(strict_types=1);
 
-namespace MageSuite\SeoHreflang\Block;
+namespace MageSuite\SeoHreflang\ViewModel;
 
-class Hreflang extends \Magento\Framework\View\Element\Template
+class Hreflang implements \Magento\Framework\View\Element\Block\ArgumentInterface
 {
-    protected $_template = 'MageSuite_SeoHreflang::hreflang.phtml';
-
     const X_DEFAULT = 'x-default';
     const QUERY_SEPARATOR = '&amp;';
 
@@ -35,16 +34,12 @@ class Hreflang extends \Magento\Framework\View\Element\Template
     protected $entityPool;
 
     public function __construct(
-        \Magento\Framework\View\Element\Template\Context $context,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\UrlInterface $urlBuilder,
         \Magento\Framework\App\RequestInterface $request,
         \MageSuite\SeoHreflang\Helper\Configuration $configuration,
-        \MageSuite\SeoHreflang\Model\EntityPool $entityPool,
-        array $data = []
+        \MageSuite\SeoHreflang\Model\EntityPool $entityPool
     ) {
-        parent::__construct($context, $data);
-
         $this->storeManager = $storeManager;
         $this->urlBuilder = $urlBuilder;
         $this->request = $request;
@@ -52,24 +47,20 @@ class Hreflang extends \Magento\Framework\View\Element\Template
         $this->entityPool = $entityPool;
     }
 
-    public function getAlternateLinks()
+    public function getAlternateLinks(): array
     {
-        $alternateLinks = [];
-
         /** @var \MageSuite\SeoHreflang\Model\Entity\EntityInterface $entity */
         $entity = $this->entityPool->getEntity();
 
         if (empty($entity)) {
-            return $alternateLinks;
+            return [];
         }
 
         $stores = $this->getStores();
-        foreach ($stores as $store) {
-            if (!$store->getIsActive()) {
-                continue;
-            }
+        $alternateLinks = [];
 
-            if (!$entity->isActive($store)) {
+        foreach ($stores as $store) {
+            if (!$store->getIsActive() || !$entity->isActive($store)) {
                 continue;
             }
 
@@ -87,22 +78,19 @@ class Hreflang extends \Magento\Framework\View\Element\Template
         return $alternateLinks;
     }
 
-    public function isEnabled()
-    {
-        return $this->configuration->isEnabled();
-    }
-
-    public function getStores()
+    protected function getStores(): array
     {
         if ($this->configuration->getHreflangScope() === \MageSuite\SeoHreflang\Model\Config\Source\HreflangScope::GLOBAL) {
             return $this->storeManager->getStores();
-        } else {
-            return $this->storeManager->getGroup()->getStores();
         }
+
+        return $this->storeManager->getGroup()->getStores();
     }
 
-    protected function getAlternateLink(\MageSuite\SeoHreflang\Model\Entity\EntityInterface $entity, $store)
-    {
+    protected function getAlternateLink(
+        \MageSuite\SeoHreflang\Model\Entity\EntityInterface $entity,
+        \Magento\Store\Model\Store $store
+    ): ?\Magento\Framework\DataObject {
         $url = $entity->getUrl($store);
 
         if (empty($url)) {
@@ -126,30 +114,25 @@ class Hreflang extends \Magento\Framework\View\Element\Template
      * @param \Magento\Store\Model\Store $store
      * @return string
      */
-    protected function getHreflangCode($store)
+    protected function getHreflangCode(\Magento\Store\Model\Store $store): string
     {
-        return $store->getHreflangCode() ? $store->getHreflangCode() : str_replace('_', '-', $store->getCode());
+        return $store->getHreflangCode() ?? str_replace('_', '-', $store->getCode());
     }
 
-    protected function addXDefaultUrl(&$alternateLinks)
+    protected function addXDefaultUrl(&$alternateLinks): void
     {
         $xDefaultStoreId = $this->configuration->getXDefaultStoreId();
 
-        if ($xDefaultStoreId < 0) {
-            return;
-        }
-
-        if (!isset($alternateLinks[$xDefaultStoreId])) {
+        if (!$xDefaultStoreId || !isset($alternateLinks[$xDefaultStoreId])) {
             return;
         }
 
         $xDefaultLink = clone $alternateLinks[$xDefaultStoreId];
         $xDefaultLink->setCode(self::X_DEFAULT);
-
         $alternateLinks[self::X_DEFAULT] = $xDefaultLink;
     }
 
-    public function addQueryToUrl($url)
+    protected function addQueryToUrl($url): string
     {
         $queryValue = $this->request->getQueryValue();
 
@@ -158,16 +141,11 @@ class Hreflang extends \Magento\Framework\View\Element\Template
         }
 
         $query = http_build_query($queryValue, '', self::QUERY_SEPARATOR);
-
-        $splitedUrl = parse_url($url);
-
-        $rawUrl = $splitedUrl['scheme'] . '://' . $splitedUrl['host'] . $splitedUrl['path'];
-
+        $splitUrl = \Zend_Uri_Http::fromString($url);
+        $rawUrl = $splitUrl->getScheme() . '://' . $splitUrl->getHost() . $splitUrl->getPath();
         $urlWithQuery = sprintf('%s?%s', $rawUrl, $query);
-
         $url = $this->urlBuilder->getUrl($urlWithQuery);
-        $url = trim($url, '/');
 
-        return $url;
+        return trim($url, '/');
     }
 }

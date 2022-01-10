@@ -5,10 +5,10 @@
  * @see https://support.google.com/webmasters/answer/189077
  * @see https://jira.pluswerk.ag/browse/ROL-140
  */
+/** @var $escaper \Magento\Framework\Escaper */
+/** @var $viewModel \MageSuite\SeoHreflang\ViewModel\Hreflang */
+$viewModel = $block->getViewModel();
 ?>
-<?php
-if ($block->isEnabled()):
-
-foreach ($block->getAlternateLinks() as $alternateLink): ?>
-    <link rel="alternate" href="<?= $alternateLink->getUrl(); ?>" hreflang="<?= $alternateLink->getCode(); ?>">
-<?php endforeach; endif; ?>
+<?php foreach ($viewModel->getAlternateLinks() as $alternateLink) : ?>
+    <link rel="alternate" href="<?= $escaper->escapeHtml($alternateLink->getUrl()); ?>" hreflang="<?= $escaper->escapeHtml($alternateLink->getCode()); ?>">
+<?php endforeach;?>
