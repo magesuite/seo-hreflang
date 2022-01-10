@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace MageSuite\SeoHreflang\Model\Entity;
 
@@ -23,41 +24,50 @@ class Product implements EntityInterface
         \Magento\UrlRewrite\Model\UrlFinderInterface $urlFinder,
         \Magento\Framework\App\RequestInterface $request,
         \Magento\Framework\Registry $registry
-    ){
+    ) {
         $this->urlFinder = $urlFinder;
         $this->request = $request;
         $this->registry = $registry;
     }
 
-    public function isApplicable()
+    public function isApplicable(): bool
     {
-        return $this->registry->registry('product') ? true : false;
+        return (bool)$this->getProduct();
     }
 
-    public function isActive($store)
+    public function isActive(\Magento\Store\Api\Data\StoreInterface $store): bool
     {
-        $currentProduct = $this->registry->registry('product');
+        $product = $this->getProduct();
 
-        if(!in_array($store->getId(), $currentProduct->getStoreIds())){
+        if (!in_array($store->getId(), $product->getStoreIds())) {
             return false;
         }
 
-        $status = $currentProduct->getResource()->getAttributeRawValue($currentProduct->getId(), 'status', $store);
+        $status = $product->getResource()->getAttributeRawValue(
+            $product->getId(),
+            'status',
+            $store
+        );
 
-        return $status == \Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_ENABLED ? true : false;
+        return $status == \Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_ENABLED;
     }
 
-    public function getUrl($store)
+    public function getUrl(\Magento\Store\Api\Data\StoreInterface $store): string
     {
         $urlRewrite = $this->urlFinder->findOneByData([
             'target_path' => trim($this->request->getPathInfo(), '/'),
             'store_id' => $store->getId()
         ]);
 
-        if($urlRewrite){
+        if ($urlRewrite) {
             return $store->getBaseUrl() . $urlRewrite->getRequestPath();
         }
 
         return $store->getCurrentUrl(false);
+    }
+
+    public function getProduct(): ?\Magento\Catalog\Model\Product
+    {
+        return $this->registry->registry('product');
     }
 }

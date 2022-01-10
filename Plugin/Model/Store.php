@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace MageSuite\SeoHreflang\Plugin\Model;
 
@@ -8,26 +9,36 @@ class Store
      * @var \Magento\Store\Model\StoreManagerInterface
      */
     protected $storeManager;
+
     /**
      * @var \Magento\Framework\Session\SidResolverInterface
      */
     protected $sidResolver;
+
     /**
      * @var \Magento\Framework\App\RequestInterface
      */
     protected $request;
+
     /**
      * @var \Magento\Framework\UrlInterface
      */
     protected $url;
+
     /**
      * @var \Magento\Framework\Session\SessionManagerInterface
      */
     protected $session;
+
     /**
      * @var \Magento\Framework\App\ProductMetadataInterface
      */
     protected $productMetadata;
+
+    /**
+     * @var \Laminas\Uri\Http
+     */
+    protected $uri;
 
     public function __construct(
         \Magento\Store\Model\StoreManagerInterface $storeManager,
@@ -35,7 +46,8 @@ class Store
         \Magento\Framework\App\RequestInterface $request,
         \Magento\Framework\UrlInterface $url,
         \Magento\Framework\Session\SessionManagerInterface $session,
-        \Magento\Framework\App\ProductMetadataInterface $productMetadata
+        \Magento\Framework\App\ProductMetadataInterface $productMetadata,
+        \Laminas\Uri\Http $uri
     ) {
         $this->storeManager = $storeManager;
         $this->sidResolver = $sidResolver;
@@ -43,10 +55,14 @@ class Store
         $this->url = $url;
         $this->session = $session;
         $this->productMetadata = $productMetadata;
+        $this->uri = $uri;
     }
 
-    public function aroundGetCurrentUrl(\Magento\Store\Model\Store $subject, callable $proceed, $fromStore = true)
-    {
+    public function aroundGetCurrentUrl(
+        \Magento\Store\Model\Store $subject,
+        callable $proceed,
+        $fromStore = true
+    ): string {
         if (version_compare($this->productMetadata->getVersion(), '2.3.5', '<')) {
             $sidQueryParam = $this->sidResolver->getSessionIdQueryParam($this->_getSession($subject->getCode()));
         }
@@ -64,14 +80,17 @@ class Store
             return $storeUrl;
         }
 
-        $storeParsedUrl = parse_url($storeUrl);
-
+        $storeParsedUrl = \Zend_Uri_Http::fromString($storeUrl);
         $storeParsedQuery = [];
-        if (isset($storeParsedUrl['query'])) {
-            parse_str($storeParsedUrl['query'], $storeParsedQuery);
+
+        if ($storeParsedUrl->getQuery()) {
+            $storeParsedQuery = $this->uri
+                ->setQuery($storeParsedUrl->getQuery())
+                ->getQueryAsArray();
         }
 
         $currQuery = $this->request->getQueryValue();
+
         if (isset($sidQueryParam)
             && !empty($currQuery[$sidQueryParam])
             && $this->_getSession($subject->getCode())->getSessionIdForHost($storeUrl) != $currQuery[$sidQueryParam]
@@ -86,16 +105,18 @@ class Store
         if (!$subject->isUseStoreInUrl()) {
             $storeParsedQuery['___store'] = $subject->getCode();
         }
+
         if ($fromStore !== false) {
-            $storeParsedQuery['___from_store'] = $fromStore ===
-            true ? $this->storeManager->getStore()->getCode() : $fromStore;
+            $storeParsedQuery['___from_store'] = $fromStore === true
+                ? $this->storeManager->getStore()->getCode()
+                : $fromStore;
         }
 
-        $currentUrl = $storeParsedUrl['scheme']
+        $currentUrl = $storeParsedUrl->getScheme()
             . '://'
-            . $storeParsedUrl['host']
-            . (isset($storeParsedUrl['port']) ? ':' . $storeParsedUrl['port'] : '')
-            . $storeParsedUrl['path']
+            . $storeParsedUrl->getHost()
+            . ($storeParsedUrl->getPort() ? ':' . $storeParsedUrl->getPort() : '')
+            . $storeParsedUrl->getPath()
             . $requestString
             . ($storeParsedQuery ? '?' . http_build_query($storeParsedQuery, '', '&amp;') : '');
 
@@ -114,6 +135,7 @@ class Store
             $this->session->setName('store_' . $code);
             $this->session->start();
         }
+
         return $this->session;
     }
 }
