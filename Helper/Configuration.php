@@ -33,6 +33,15 @@ class Configuration extends \Magento\Framework\App\Helper\AbstractHelper
         );
     }
 
+    public function isStoreExcluded($storeId = null): bool
+    {
+        return $this->scopeConfig->isSetFlag(
+            self::XML_PATH_CONFIGURATION_KEY . '/exclude_store',
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $storeId
+        );
+    }
+
     protected function getConfig(): \Magento\Framework\DataObject
     {
         if ($this->config === null) {

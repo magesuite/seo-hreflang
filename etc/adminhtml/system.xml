@@ -32,6 +32,11 @@
                         <![CDATA[Tells which storeview should be recommended for international audience. <a href="https://webmasters.googleblog.com/2013/04/x-default-hreflang-for-international-pages.html" target="_blank" rel=”noopener”>Read more</a>.]]>
                     </comment>
                 </field>
+                <field id="exclude_store" translate="label" type="select" sortOrder="40" showInDefault="0" showInWebsite="1" showInStore="1">
+                    <label>Exclude store</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[Exclude the store from the canonical URL list.]]></comment>
+                </field>
             </group>
         </section>
     </system>
