@@ -60,7 +60,7 @@ class Hreflang implements \Magento\Framework\View\Element\Block\ArgumentInterfac
         $alternateLinks = [];
 
         foreach ($stores as $store) {
-            if (!$store->getIsActive() || !$entity->isActive($store)) {
+            if (!$this->isApplicable($entity, $store)) {
                 continue;
             }
 
@@ -76,6 +76,15 @@ class Hreflang implements \Magento\Framework\View\Element\Block\ArgumentInterfac
         $this->addXDefaultUrl($alternateLinks);
 
         return $alternateLinks;
+    }
+
+    protected function isApplicable(
+        \MageSuite\SeoHreflang\Model\Entity\EntityInterface $entity,
+        \Magento\Store\Api\Data\StoreInterface $store
+    ): bool {
+        return $store->getIsActive()
+            && !$this->configuration->isStoreExcluded($store)
+            && $entity->isActive($store);
     }
 
     protected function getStores(): array
