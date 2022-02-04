@@ -9,6 +9,11 @@ class Brand implements EntityInterface
     const BRAND_REGISTRY_KEY = 'current_brand';
 
     /**
+     * @var \MageSuite\BrandManagement\Helper\Configuration
+     */
+    protected $configuration;
+
+    /**
      * @var \Magento\Framework\App\RequestInterface
      */
     protected $request;
@@ -19,9 +24,11 @@ class Brand implements EntityInterface
     protected $registry;
 
     public function __construct(
+        \MageSuite\BrandManagement\Helper\Configuration $configuration,
         \Magento\Framework\App\RequestInterface $request,
         \Magento\Framework\Registry $registry
     ) {
+        $this->configuration = $configuration;
         $this->request = $request;
         $this->registry = $registry;
     }
@@ -70,7 +77,7 @@ class Brand implements EntityInterface
         $brand = $this->getBrand();
 
         if ($brand === null) {
-            return $store->getCurrentUrl(false);
+            return $store->getBaseUrl() . $this->configuration->getRouteToBrand($store->getId());
         }
 
         return $brand->getBrandUrl($store);
