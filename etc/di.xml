@@ -6,9 +6,6 @@
         <plugin name="get_current_url_fix" type="MageSuite\SeoHreflang\Plugin\Model\Store" sortOrder="10" />
     </type>
 
-    <preference for="Magento\Backend\Block\System\Store\Edit\Form\Store"
-                type="MageSuite\SeoHreflang\Block\System\Store\Edit\Form\Store" />
-
     <type name="MageSuite\SeoHreflang\Model\EntityPool">
         <arguments>
             <argument name="entities" xsi:type="array">
