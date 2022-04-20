@@ -15,9 +15,6 @@ class AddHreflangCodeFieldToStoreEditForm implements \Magento\Framework\Event\Ob
     {
         /** @var \Magento\Backend\Block\System\Store\Edit\AbstractForm $block */
         $block = $observer->getBlock();
-        if ($block->getId() != 'coreStoreForm') {
-            return;
-        }
 
         /** @var \Magento\Framework\Data\Form $form */
         $form = $block->getForm();
