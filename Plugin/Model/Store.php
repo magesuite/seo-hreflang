@@ -118,7 +118,7 @@ class Store
             . ($storeParsedUrl->getPort() ? ':' . $storeParsedUrl->getPort() : '')
             . $storeParsedUrl->getPath()
             . $requestString
-            . ($storeParsedQuery ? '?' . http_build_query($storeParsedQuery, '', '&amp;') : '');
+            . ($storeParsedQuery ? '?' . http_build_query($storeParsedQuery) : '');
 
         return $currentUrl;
     }
