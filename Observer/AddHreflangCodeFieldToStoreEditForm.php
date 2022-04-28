@@ -18,8 +18,11 @@ class AddHreflangCodeFieldToStoreEditForm implements \Magento\Framework\Event\Ob
 
         /** @var \Magento\Framework\Data\Form $form */
         $form = $block->getForm();
-
         $fieldset = $form->getForm()->getElement('store_fieldset');
+        if (empty($fieldset)) {
+            return;
+        }
+
         $storeModel = $this->registry->registry('store_data');
         $fieldset->addField(
             'store_hreflang_code',
