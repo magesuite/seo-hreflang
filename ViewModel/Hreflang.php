@@ -157,11 +157,4 @@ class Hreflang implements \Magento\Framework\View\Element\Block\ArgumentInterfac
 
         return trim($url, '/');
     }
-
-    protected function getCategory()
-    {
-        $registry = \Magento\Framework\App\ObjectManager::getInstance()->get(\Magento\Framework\Registry::class);
-        $category = $registry->registry('current_category');
-        return ($category && $category->getId()) ? $category : null;
-    }
 }
