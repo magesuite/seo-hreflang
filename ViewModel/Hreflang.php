@@ -141,7 +141,7 @@ class Hreflang implements \Magento\Framework\View\Element\Block\ArgumentInterfac
         $alternateLinks[self::X_DEFAULT] = $xDefaultLink;
     }
 
-    protected function addQueryToUrl($url): string
+    public function addQueryToUrl($url): string
     {
         $queryValue = $this->request->getQueryValue();
 
@@ -156,5 +156,12 @@ class Hreflang implements \Magento\Framework\View\Element\Block\ArgumentInterfac
         $url = $this->urlBuilder->getUrl($urlWithQuery);
 
         return trim($url, '/');
+    }
+
+    protected function getCategory()
+    {
+        $registry = \Magento\Framework\App\ObjectManager::getInstance()->get(\Magento\Framework\Registry::class);
+        $category = $registry->registry('current_category');
+        return ($category && $category->getId()) ? $category : null;
     }
 }
