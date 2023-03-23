@@ -80,7 +80,7 @@ class Store
             return $storeUrl;
         }
 
-        $storeParsedUrl = \Zend_Uri_Http::fromString($storeUrl);
+        $storeParsedUrl = \Laminas\Uri\UriFactory::factory($storeUrl);
         $storeParsedQuery = [];
 
         if ($storeParsedUrl->getQuery()) {
