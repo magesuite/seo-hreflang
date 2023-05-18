@@ -80,7 +80,7 @@ class Store
             return $storeUrl;
         }
 
-        $storeParsedUrl = \Zend_Uri_Http::fromString($storeUrl);
+        $storeParsedUrl = \Laminas\Uri\UriFactory::factory($storeUrl);
         $storeParsedQuery = [];
 
         if ($storeParsedUrl->getQuery()) {
@@ -112,10 +112,17 @@ class Store
                 : $fromStore;
         }
 
+        $isDefaultPort = in_array(
+            $storeParsedUrl->getPort(),
+            [
+                \Magento\Framework\App\Request\Http::DEFAULT_HTTP_PORT,
+                \Magento\Framework\App\Request\Http::DEFAULT_HTTPS_PORT
+            ]
+        );
         $currentUrl = $storeParsedUrl->getScheme()
             . '://'
             . $storeParsedUrl->getHost()
-            . ($storeParsedUrl->getPort() ? ':' . $storeParsedUrl->getPort() : '')
+            . (!$isDefaultPort ? ':' . $storeParsedUrl->getPort() : '')
             . $storeParsedUrl->getPath()
             . $requestString
             . ($storeParsedQuery ? '?' . http_build_query($storeParsedQuery) : '');
