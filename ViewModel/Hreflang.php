@@ -78,7 +78,7 @@ class Hreflang implements \Magento\Framework\View\Element\Block\ArgumentInterfac
         return $alternateLinks;
     }
 
-    protected function isApplicable(
+    public function isApplicable(
         \MageSuite\SeoHreflang\Model\Entity\EntityInterface $entity,
         \Magento\Store\Api\Data\StoreInterface $store
     ): bool {
