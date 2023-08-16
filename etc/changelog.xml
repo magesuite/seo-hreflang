@@ -1,0 +1,13 @@
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:MageSuite_Changelog:etc/changelog.xsd">
+    <module id="MageSuite_SeoHreflang" name="MageSuite_SeoHreflang">
+        <changelog>
+            <tag version="1.2.8" date="2023-08-16">
+                <entry>
+                    <type>FIX</type>
+                    <overview>Add missing condition regarding module configuration (enable/disable)</overview>
+                    <ticket_id>MGS-5208</ticket_id>
+                </entry>
+            </tag>
+        </changelog>
+    </module>
+</config>

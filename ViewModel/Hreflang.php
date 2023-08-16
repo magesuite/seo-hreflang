@@ -84,7 +84,8 @@ class Hreflang implements \Magento\Framework\View\Element\Block\ArgumentInterfac
     ): bool {
         return $store->getIsActive()
             && !$this->configuration->isStoreExcluded($store)
-            && $entity->isActive($store);
+            && $entity->isActive($store)
+            && $this->configuration->isEnabled();
     }
 
     protected function getStores(): array
