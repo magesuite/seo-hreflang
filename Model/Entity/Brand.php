@@ -23,14 +23,21 @@ class Brand implements EntityInterface
      */
     protected $registry;
 
+    /**
+     * @var \MageSuite\SeoHreflang\Model\ResourceModel\MultiStoreAttributeLoader
+     */
+    protected $multistoreAttributeLoader;
+
     public function __construct(
         \MageSuite\BrandManagement\Helper\Configuration $configuration,
         \Magento\Framework\App\RequestInterface $request,
-        \Magento\Framework\Registry $registry
+        \Magento\Framework\Registry $registry,
+        \MageSuite\SeoHreflang\Model\ResourceModel\MultiStoreAttributeLoader $multistoreAttributeLoader
     ) {
         $this->configuration = $configuration;
         $this->request = $request;
         $this->registry = $registry;
+        $this->multistoreAttributeLoader = $multistoreAttributeLoader;
     }
 
     public function isApplicable(): bool
@@ -54,20 +61,11 @@ class Brand implements EntityInterface
             return false;
         }
 
-        $brandResource = $brand->getResource();
-        $isEnabled = $brandResource->getAttributeRawValue(
-            $brand->getEntityId(),
+        $isEnabled = $this->multistoreAttributeLoader->getAttributeRawValue(
+            $brand,
             'enabled',
-            $store->getId()
+            (int)$store->getId()
         );
-
-        if ($isEnabled === false) {
-            $isEnabled = $brandResource->getAttributeRawValue(
-                $brand->getEntityId(),
-                'enabled',
-                \Magento\Store\Model\Store::DEFAULT_STORE_ID
-            );
-        }
 
         return (bool)$isEnabled;
     }
