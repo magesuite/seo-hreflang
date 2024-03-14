@@ -20,21 +20,14 @@ class Product implements EntityInterface
      */
     protected $registry;
 
-    /**
-     * @var \MageSuite\SeoHreflang\Model\ResourceModel\MultiStoreAttributeLoader
-     */
-    protected $multistoreAttributeLoader;
-
     public function __construct(
         \Magento\UrlRewrite\Model\UrlFinderInterface $urlFinder,
         \Magento\Framework\App\RequestInterface $request,
-        \Magento\Framework\Registry $registry,
-        \MageSuite\SeoHreflang\Model\ResourceModel\MultiStoreAttributeLoader $multistoreAttributeLoader
+        \Magento\Framework\Registry $registry
     ) {
         $this->urlFinder = $urlFinder;
         $this->request = $request;
         $this->registry = $registry;
-        $this->multistoreAttributeLoader = $multistoreAttributeLoader;
     }
 
     public function isApplicable(): bool
@@ -50,10 +43,10 @@ class Product implements EntityInterface
             return false;
         }
 
-        $status = $this->multistoreAttributeLoader->getAttributeRawValue(
-            $product,
+        $status = $product->getResource()->getAttributeRawValue(
+            $product->getId(),
             'status',
-            (int)$store->getId()
+            $store
         );
 
         return $status == \Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_ENABLED;
