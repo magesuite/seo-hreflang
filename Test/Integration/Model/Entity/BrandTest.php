@@ -45,6 +45,8 @@ class BrandTest extends \PHPUnit\Framework\TestCase
      * @magentoDataFixture brandsFixture
      * @magentoConfigFixture default_store web/url/use_store 1
      * @magentoConfigFixture second_store web/url/use_store 1
+     * @magentoConfigFixture default_store brand_management/general/route_to_brand brands
+     * @magentoConfigFixture second_store brand_management/general/route_to_brand brands
      */
     public function testItReturnsCorrectData()
     {
