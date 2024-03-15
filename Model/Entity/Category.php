@@ -20,21 +20,14 @@ class Category implements EntityInterface
      */
     protected $registry;
 
-    /**
-     * @var \MageSuite\SeoHreflang\Model\ResourceModel\MultiStoreAttributeLoader
-     */
-    protected $multistoreAttributeLoader;
-
     public function __construct(
         \Magento\UrlRewrite\Model\UrlFinderInterface $urlFinder,
         \Magento\Framework\App\RequestInterface $request,
-        \Magento\Framework\Registry $registry,
-        \MageSuite\SeoHreflang\Model\ResourceModel\MultiStoreAttributeLoader $multistoreAttributeLoader
+        \Magento\Framework\Registry $registry
     ) {
         $this->urlFinder = $urlFinder;
         $this->request = $request;
         $this->registry = $registry;
-        $this->multistoreAttributeLoader = $multistoreAttributeLoader;
     }
 
     public function isApplicable(): bool
@@ -49,13 +42,11 @@ class Category implements EntityInterface
     {
         $category = $this->getCategory();
 
-        $isActive = $this->multistoreAttributeLoader->getAttributeRawValue(
-            $category,
+        return (bool)$category->getResource()->getAttributeRawValue(
+            $category->getId(),
             'is_active',
-            (int)$store->getId()
+            $store
         );
-
-        return (bool)$isActive;
     }
 
     public function getUrl(\Magento\Store\Api\Data\StoreInterface $store): string
