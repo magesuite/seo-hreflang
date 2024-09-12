@@ -16,4 +16,14 @@
             </argument>
         </arguments>
     </type>
+    <type name="MageSuite\SeoHreflang\Model\Entity\Product">
+        <arguments>
+            <argument name="urlFinder" xsi:type="object">MageSuite\SeoHreflang\Model\ResourceModel\MultiStoreUrlRewriteLoader</argument>
+        </arguments>
+    </type>
+    <type name="MageSuite\SeoHreflang\Model\Entity\Category">
+        <arguments>
+            <argument name="urlFinder" xsi:type="object">MageSuite\SeoHreflang\Model\ResourceModel\MultiStoreUrlRewriteLoader</argument>
+        </arguments>
+    </type>
 </config>

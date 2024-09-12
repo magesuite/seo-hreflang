@@ -28,6 +28,11 @@ class CategoryTest extends \PHPUnit\Framework\TestCase
      */
     protected $categoryEntity;
 
+    /**
+     * @var \Magento\Framework\App\Request\Http
+     */
+    protected $request;
+
     public function setUp(): void
     {
         $this->objectManager = \Magento\TestFramework\ObjectManager::getInstance();
@@ -37,11 +42,12 @@ class CategoryTest extends \PHPUnit\Framework\TestCase
         $this->categoryRepository = $this->objectManager->get(\Magento\Catalog\Api\CategoryRepositoryInterface::class);
 
         $this->categoryEntity = $this->objectManager->get(\MageSuite\SeoHreflang\Model\Entity\Category::class);
+        $this->request = $this->objectManager->get(\Magento\Framework\App\Request\Http::class);
     }
 
     /**
      * @magentoDbIsolation enabled
-     * @magentoDataFixture categoriesFixture
+     * @magentoDataFixture MageSuite_SeoHreflang::Test/Integration/_files/categories.php
      */
     public function testItReturnsCorrectData()
     {
@@ -62,13 +68,35 @@ class CategoryTest extends \PHPUnit\Framework\TestCase
         $this->registry->unregister('current_category');
     }
 
-    public static function categoriesFixture()
+    /**
+     * @magentoDbIsolation enabled
+     * @magentoDataFixture MageSuite_SeoHreflang::Test/Integration/_files/category_url_rewrite.php
+     */
+    public function testItReturnsCorrectUrl()
     {
-        include __DIR__ . '/../../../_files/categories.php';
+        $this->request->setPathInfo('catalog/category/view/id/100');
+
+        $this->store->setId(1);
+        $urlForFirstStore = $this->categoryEntity->getUrl($this->store);
+        $this->assertEquals('http://localhost/index.php/active-category.html', $urlForFirstStore);
+
+        $this->store->setId(2);
+        $urlForSecondStore = $this->categoryEntity->getUrl($this->store);
+        $this->assertEquals('http://localhost/index.php/rewrite_for_active_category.html', $urlForSecondStore);
     }
 
-    public static function categoriesFixtureRollback()
+    /**
+     * @magentoDbIsolation enabled
+     * @magentoDataFixture MageSuite_SeoHreflang::Test/Integration/_files/category_url_rewrite.php
+     */
+    public function testItThrowsExceptionWhenStoreIsNotSet()
     {
-        include __DIR__ . '/../../../_files/categories_rollback.php';
+        try {
+            $this->store->setId(3);
+            $this->categoryEntity->getUrl($this->store);
+            $this->fail();
+        } catch (\Exception $e) {
+            $this->assertEquals('The store that was requested wasn\'t found. Verify the store and try again.', $e->getMessage());
+        }
     }
 }
