@@ -42,7 +42,7 @@ class BrandTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @magentoDbIsolation enabled
-     * @magentoDataFixture brandsFixture
+     * @magentoDataFixture MageSuite_SeoHreflang::Test/Integration/_files/brands.php
      * @magentoConfigFixture default_store web/url/use_store 1
      * @magentoConfigFixture second_store web/url/use_store 1
      */
@@ -69,15 +69,5 @@ class BrandTest extends \PHPUnit\Framework\TestCase
         $this->registry->register('current_brand', $disabledBrand);
         $this->assertFalse($this->brandEntity->isActive($store));
         $this->registry->unregister('current_brand');
-    }
-
-    public static function brandsFixture()
-    {
-        include __DIR__ . '/../../../_files/brands.php';
-    }
-
-    public static function brandsFixtureRollback()
-    {
-        include __DIR__ . '/../../../_files/brands_rollback.php';
     }
 }

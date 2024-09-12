@@ -28,7 +28,7 @@ class CmsTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @magentoDbIsolation enabled
-     * @magentoDataFixture pagesFixture
+     * @magentoDataFixture MageSuite_SeoHreflang::Test/Integration/_files/pages.php
      */
     public function testItReturnsCorrectData()
     {
@@ -61,15 +61,5 @@ class CmsTest extends \PHPUnit\Framework\TestCase
 
         $this->store->setId(1);
         $this->assertFalse($cmsPageEntity->isActive($this->store));
-    }
-
-    public static function pagesFixture()
-    {
-        include __DIR__ . '/../../../_files/pages.php';
-    }
-
-    public static function pagesFixtureRollback()
-    {
-        include __DIR__ . '/../../../_files/pages_rollback.php';
     }
 }
