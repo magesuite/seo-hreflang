@@ -77,7 +77,7 @@ class Brand implements EntityInterface
         $brand = $this->getBrand();
 
         if ($brand === null) {
-            return $store->getBaseUrl() . $this->configuration->getRouteToBrand($store->getId());
+            return $store->getBaseUrl() . $this->configuration->getRouteToBrand((int)$store->getId());
         }
 
         return $brand->getBrandUrl($store);
