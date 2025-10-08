@@ -1,24 +1,14 @@
 <?php
+
 declare(strict_types=1);
 
 namespace MageSuite\SeoHreflang\Model\Entity;
 
 class Category implements EntityInterface
 {
-    /**
-     * @var \Magento\UrlRewrite\Model\UrlFinderInterface
-     */
-    protected $urlFinder;
-
-    /**
-     * @var \Magento\Framework\App\RequestInterface
-     */
-    protected $request;
-
-    /**
-     * @var \Magento\Framework\Registry
-     */
-    protected $registry;
+    protected \Magento\UrlRewrite\Model\UrlFinderInterface $urlFinder;
+    protected \Magento\Framework\App\RequestInterface $request;
+    protected \Magento\Framework\Registry $registry;
 
     public function __construct(
         \Magento\UrlRewrite\Model\UrlFinderInterface $urlFinder,

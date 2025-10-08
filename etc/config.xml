@@ -3,10 +3,11 @@
     <default>
         <seo>
             <configuration>
-                <canonical_tag_enabled>0</canonical_tag_enabled>
                 <hreflang_tags_enabled>0</hreflang_tags_enabled>
                 <hreflang_scope>global</hreflang_scope>
                 <x_default>-1</x_default>
+                <hide_for_noindex>0</hide_for_noindex>
+                <strip_parameters_from_the_url>0</strip_parameters_from_the_url>
                 <exclude_store>0</exclude_store>
             </configuration>
         </seo>
