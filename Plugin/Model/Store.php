@@ -1,44 +1,18 @@
 <?php
+
 declare(strict_types=1);
 
 namespace MageSuite\SeoHreflang\Plugin\Model;
 
 class Store
 {
-    /**
-     * @var \Magento\Store\Model\StoreManagerInterface
-     */
-    protected $storeManager;
-
-    /**
-     * @var \Magento\Framework\Session\SidResolverInterface
-     */
-    protected $sidResolver;
-
-    /**
-     * @var \Magento\Framework\App\RequestInterface
-     */
-    protected $request;
-
-    /**
-     * @var \Magento\Framework\UrlInterface
-     */
-    protected $url;
-
-    /**
-     * @var \Magento\Framework\Session\SessionManagerInterface
-     */
-    protected $session;
-
-    /**
-     * @var \Magento\Framework\App\ProductMetadataInterface
-     */
-    protected $productMetadata;
-
-    /**
-     * @var \Laminas\Uri\Http
-     */
-    protected $uri;
+    protected \Magento\Store\Model\StoreManagerInterface $storeManager;
+    protected \Magento\Framework\Session\SidResolverInterface $sidResolver;
+    protected \Magento\Framework\App\RequestInterface $request;
+    protected \Magento\Framework\UrlInterface $url;
+    protected \Magento\Framework\Session\SessionManagerInterface $session;
+    protected \Magento\Framework\App\ProductMetadataInterface $productMetadata;
+    protected \Laminas\Uri\Http $uri;
 
     public function __construct(
         \Magento\Store\Model\StoreManagerInterface $storeManager,
@@ -58,13 +32,14 @@ class Store
         $this->uri = $uri;
     }
 
-    public function aroundGetCurrentUrl(
-        \Magento\Store\Model\Store $subject,
-        callable $proceed,
-        $fromStore = true
-    ): string {
+    /**
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     * @SuppressWarnings(PHPMD.NPathComplexity)
+     */
+    public function aroundGetCurrentUrl(\Magento\Store\Model\Store $subject, callable $proceed, $fromStore = true): string
+    {
         if (version_compare($this->productMetadata->getVersion(), '2.3.5', '<')) {
-            $sidQueryParam = $this->sidResolver->getSessionIdQueryParam($this->_getSession($subject->getCode()));
+            $sidQueryParam = $this->sidResolver->getSessionIdQueryParam($this->getSession($subject->getCode()));
         }
 
         $requestString = $this->url->escape(
@@ -89,16 +64,17 @@ class Store
                 ->getQueryAsArray();
         }
 
-        $currQuery = $this->request->getQueryValue();
+        $currentQuery = $this->request->getQueryValue();
 
-        if (isset($sidQueryParam)
-            && !empty($currQuery[$sidQueryParam])
-            && $this->_getSession($subject->getCode())->getSessionIdForHost($storeUrl) != $currQuery[$sidQueryParam]
+        if (
+            isset($sidQueryParam)
+            && !empty($currentQuery[$sidQueryParam])
+            && $this->getSession($subject->getCode())->getSessionIdForHost($storeUrl) != $currentQuery[$sidQueryParam]
         ) {
-            unset($currQuery[$sidQueryParam]);
+            unset($currentQuery[$sidQueryParam]);
         }
 
-        foreach ($currQuery as $key => $value) {
+        foreach ($currentQuery as $key => $value) {
             $storeParsedQuery[$key] = $value;
         }
 
@@ -119,24 +95,17 @@ class Store
                 \Magento\Framework\App\Request\Http::DEFAULT_HTTPS_PORT
             ]
         );
-        $currentUrl = $storeParsedUrl->getScheme()
+
+        return $storeParsedUrl->getScheme()
             . '://'
             . $storeParsedUrl->getHost()
             . (!$isDefaultPort ? ':' . $storeParsedUrl->getPort() : '')
             . $storeParsedUrl->getPath()
             . $requestString
             . ($storeParsedQuery ? '?' . http_build_query($storeParsedQuery) : '');
-
-        return $currentUrl;
     }
 
-    /**
-     * Retrieve store session object
-     *
-     * @param $code
-     * @return \Magento\Framework\Session\SessionManagerInterface
-     */
-    protected function _getSession($code)
+    protected function getSession(string $code): \Magento\Framework\Session\SessionManagerInterface
     {
         if (!$this->session->isSessionExists()) {
             $this->session->setName('store_' . $code);

@@ -1,26 +1,16 @@
 <?php
+
 declare(strict_types=1);
 
 namespace MageSuite\SeoHreflang\Model\Entity;
 
 class CmsPage implements EntityInterface
 {
-    const ALL_STORES_ID = 0;
+    public const ALL_STORES_ID = 0;
 
-    /**
-     * @var \Magento\Cms\Api\Data\PageInterface
-     */
-    protected $page;
-
-    /**
-     * @var \Magento\Cms\Model\ResourceModel\Page\CollectionFactory
-     */
-    protected $pageCollectionFactory;
-
-    /**
-     * @var \MageSuite\SeoHreflang\Helper\Configuration
-     */
-    protected $configuration;
+    protected \Magento\Cms\Api\Data\PageInterface $page;
+    protected \Magento\Cms\Model\ResourceModel\Page\CollectionFactory $pageCollectionFactory;
+    protected \MageSuite\SeoHreflang\Helper\Configuration $configuration;
 
     public function __construct(
         \Magento\Cms\Api\Data\PageInterface $page,
@@ -57,7 +47,7 @@ class CmsPage implements EntityInterface
         }
 
         $url = $store->getBaseUrl();
-        $homePageIdentifier = $this->configuration->getHomepageIdentifier($store->getId());
+        $homePageIdentifier = $this->configuration->getHomepageIdentifier((int)$store->getId());
         $homePageDelimiterPosition = strrpos($homePageIdentifier, '|');
 
         if ($homePageDelimiterPosition) {
@@ -94,7 +84,7 @@ class CmsPage implements EntityInterface
         return null;
     }
 
-    protected function getCmsPage(\Magento\Store\Api\Data\StoreInterface $store)
+    protected function getCmsPage(\Magento\Store\Api\Data\StoreInterface $store): ?\Magento\Cms\Api\Data\PageInterface
     {
         $collection = $this->pageCollectionFactory->create();
         $collection

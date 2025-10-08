@@ -1,50 +1,42 @@
 <?php
+
 declare(strict_types=1);
 
 namespace MageSuite\SeoHreflang\ViewModel;
 
 class Hreflang implements \Magento\Framework\View\Element\Block\ArgumentInterface
 {
-    const X_DEFAULT = 'x-default';
-    const QUERY_SEPARATOR = '&amp;';
+    public const X_DEFAULT = 'x-default';
+    public const QUERY_SEPARATOR = '&amp;';
 
-    /**
-     * @var \Magento\Store\Model\StoreManagerInterface
-     */
-    protected $storeManager;
+    protected \Magento\Store\Model\StoreManagerInterface $storeManager;
+    protected \Magento\Framework\UrlInterface $urlBuilder;
+    protected \Magento\Framework\App\RequestInterface $request;
+    protected \Magento\Framework\View\Page\Config $pageConfig;
+    protected \MageSuite\SeoHreflang\Helper\Configuration $configuration;
+    protected \MageSuite\SeoHreflang\Model\EntityPool $entityPool;
+    protected \MageSuite\SeoCanonical\Helper\Configuration $canonicalConfiguration;
 
-    /**
-     * @var \Magento\Framework\UrlInterface
-     */
-    protected $urlBuilder;
-
-    /**
-     * @var \Magento\Framework\App\RequestInterface
-     */
-    protected $request;
-
-    /**
-     * @var \MageSuite\SeoHreflang\Helper\Configuration
-     */
-    protected $configuration;
-
-    /**
-     * @var \MageSuite\SeoHreflang\Model\EntityPool
-     */
-    protected $entityPool;
+    protected array $allowedQueryParameters = [];
 
     public function __construct(
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         \Magento\Framework\UrlInterface $urlBuilder,
         \Magento\Framework\App\RequestInterface $request,
+        \Magento\Framework\View\Page\Config $pageConfig,
         \MageSuite\SeoHreflang\Helper\Configuration $configuration,
-        \MageSuite\SeoHreflang\Model\EntityPool $entityPool
+        \MageSuite\SeoHreflang\Model\EntityPool $entityPool,
+        \MageSuite\SeoCanonical\Helper\Configuration $canonicalConfiguration,
+        array $allowedQueryParameters = []
     ) {
         $this->storeManager = $storeManager;
         $this->urlBuilder = $urlBuilder;
         $this->request = $request;
+        $this->pageConfig = $pageConfig;
         $this->configuration = $configuration;
         $this->entityPool = $entityPool;
+        $this->canonicalConfiguration = $canonicalConfiguration;
+        $this->allowedQueryParameters = $allowedQueryParameters;
     }
 
     public function getAlternateLinks(): array
@@ -78,14 +70,30 @@ class Hreflang implements \Magento\Framework\View\Element\Block\ArgumentInterfac
         return $alternateLinks;
     }
 
-    public function isApplicable(
-        \MageSuite\SeoHreflang\Model\Entity\EntityInterface $entity,
-        \Magento\Store\Api\Data\StoreInterface $store
-    ): bool {
-        return $store->getIsActive()
-            && !$this->configuration->isStoreExcluded($store)
-            && $entity->isActive($store)
-            && $this->configuration->isEnabled();
+    public function isApplicable(\MageSuite\SeoHreflang\Model\Entity\EntityInterface $entity, \Magento\Store\Api\Data\StoreInterface $store): bool
+    {
+        if (!$store->getIsActive()) {
+            return false;
+        }
+
+        if ($this->configuration->isStoreExcluded((int)$store->getId())) {
+            return false;
+        }
+
+        if (!$entity->isActive($store)) {
+            return false;
+        }
+
+        if (!$this->configuration->isEnabled()) {
+            return false;
+        }
+
+        $robots = $this->pageConfig->getRobots();
+        if ($this->configuration->hideForNoindex((int)$store->getId()) && $robots && str_contains($robots, 'NOINDEX')) {
+            return false;
+        }
+
+        return true;
     }
 
     protected function getStores(): array
@@ -97,10 +105,8 @@ class Hreflang implements \Magento\Framework\View\Element\Block\ArgumentInterfac
         return $this->storeManager->getGroup()->getStores();
     }
 
-    protected function getAlternateLink(
-        \MageSuite\SeoHreflang\Model\Entity\EntityInterface $entity,
-        \Magento\Store\Model\Store $store
-    ): ?\Magento\Framework\DataObject {
+    protected function getAlternateLink(\MageSuite\SeoHreflang\Model\Entity\EntityInterface $entity, \Magento\Store\Model\Store $store): ?\Magento\Framework\DataObject
+    {
         $url = $entity->getUrl($store);
 
         if (empty($url)) {
@@ -120,16 +126,13 @@ class Hreflang implements \Magento\Framework\View\Element\Block\ArgumentInterfac
     /**
      * It is required that language and region codes are separated by dash "-"
      * instead of underscore "_" which Magento returns.
-     *
-     * @param \Magento\Store\Model\Store $store
-     * @return string
      */
     protected function getHreflangCode(\Magento\Store\Model\Store $store): string
     {
         return $store->getHreflangCode() ?? str_replace('_', '-', $store->getCode());
     }
 
-    protected function addXDefaultUrl(&$alternateLinks): void
+    protected function addXDefaultUrl(&$alternateLinks): void //phpcs:ignore
     {
         $xDefaultStoreId = $this->configuration->getXDefaultStoreId();
 
@@ -142,14 +145,28 @@ class Hreflang implements \Magento\Framework\View\Element\Block\ArgumentInterfac
         $alternateLinks[self::X_DEFAULT] = $xDefaultLink;
     }
 
-    public function addQueryToUrl($url): string
+    public function addQueryToUrl(string $url): string
     {
         $queryValue = $this->request->getQueryValue();
 
+        if (!$this->configuration->shouldStripParametersFromUrl()) {
+            return $this->buildUrlWithQuery($url, $queryValue);
+        }
+
+        if (!$this->canonicalConfiguration->isCanonicalForPaginatedPagesEnabled() || !$this->canonicalConfiguration->isCanonicalPageParamEnabled()) {
+            return $url;
+        }
+
+        $queryValue = array_intersect_key($queryValue, array_flip($this->allowedQueryParameters));
         if (empty($queryValue)) {
             return $url;
         }
 
+        return $this->buildUrlWithQuery($url, $queryValue);
+    }
+
+    protected function buildUrlWithQuery(string $url, array $queryValue): string
+    {
         $query = http_build_query($queryValue, '', self::QUERY_SEPARATOR);
         $splitUrl = \Laminas\Uri\UriFactory::factory($url);
         $rawUrl = $splitUrl->getScheme() . '://' . $splitUrl->getHost() . $splitUrl->getPath();

@@ -1,57 +1,58 @@
 <?php
+
 declare(strict_types=1);
 
 namespace MageSuite\SeoHreflang\Helper;
 
-class Configuration extends \Magento\Framework\App\Helper\AbstractHelper
+class Configuration
 {
-    const XML_PATH_CONFIGURATION_KEY = 'seo/configuration';
+    public const XML_PATH_CONFIGURATION_KEY = 'seo/configuration';
+    public const XML_PATH_SEO_CONFIGURATION_HREFLANG_TAGS_ENABLED = 'seo/configuration/hreflang_tags_enabled';
+    public const XML_PATH_SEO_CONFIGURATION_HREFLANG_SCOPE = 'seo/configuration/hreflang_scope';
+    public const XML_PATH_SEO_CONFIGURATION_X_DEFAULT = 'seo/configuration/x_default';
+    public const XML_PATH_SEO_CONFIGURATION_HIDE_FOR_NOINDEX = 'seo/configuration/hide_for_noindex';
+    public const XML_PATH_SEO_CONFIGURATION_STRIP_PARAMETERS_FROM_THE_URL = 'seo/configuration/strip_parameters_from_the_url';
+    public const XML_PATH_SEO_CONFIGURATION_EXCLUDE_STORE = 'seo/configuration/exclude_store';
 
-    protected $config;
+    protected \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig;
+
+    public function __construct(\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig)
+    {
+        $this->scopeConfig = $scopeConfig;
+    }
 
     public function isEnabled(): bool
     {
-        return (bool)$this->getConfig()->getHreflangTagsEnabled();
-    }
-
-    public function getXDefaultStoreId(): int
-    {
-        return (int)$this->getConfig()->getXDefault();
+        return $this->scopeConfig->isSetFlag(self::XML_PATH_SEO_CONFIGURATION_HREFLANG_TAGS_ENABLED, \Magento\Store\Model\ScopeInterface::SCOPE_WEBSITE);
     }
 
     public function getHreflangScope(): string
     {
-        return (string)$this->getConfig()->getHreflangScope();
+        return (string)$this->scopeConfig->getValue(self::XML_PATH_SEO_CONFIGURATION_HREFLANG_SCOPE);
     }
 
-    public function getHomepageIdentifier($storeId = null): string
+    public function getXDefaultStoreId(): int
     {
-        return (string)$this->scopeConfig->getValue(
-            \Magento\Cms\Helper\Page::XML_PATH_HOME_PAGE,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-            $storeId
-        );
+        return (int)$this->scopeConfig->getValue(self::XML_PATH_SEO_CONFIGURATION_X_DEFAULT, \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
     }
 
-    public function isStoreExcluded($storeId = null): bool
+    public function getHomepageIdentifier(?int $storeId = null): string
     {
-        return $this->scopeConfig->isSetFlag(
-            self::XML_PATH_CONFIGURATION_KEY . '/exclude_store',
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-            $storeId
-        );
+        return (string)$this->scopeConfig->getValue(\Magento\Cms\Helper\Page::XML_PATH_HOME_PAGE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $storeId);
     }
 
-    protected function getConfig(): \Magento\Framework\DataObject
+    public function hideForNoindex(?int $storeId = null): bool
     {
-        if ($this->config === null) {
-            $config = $this->scopeConfig->getValue(
-                self::XML_PATH_CONFIGURATION_KEY,
-                \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-            );
-            $this->config = new \Magento\Framework\DataObject($config);
-        }
+        return $this->scopeConfig->isSetFlag(self::XML_PATH_SEO_CONFIGURATION_HIDE_FOR_NOINDEX, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $storeId);
+    }
 
-        return $this->config;
+    public function shouldStripParametersFromUrl(?int $storeId = null): bool
+    {
+        return $this->scopeConfig->isSetFlag(self::XML_PATH_SEO_CONFIGURATION_STRIP_PARAMETERS_FROM_THE_URL, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $storeId);
+    }
+
+    public function isStoreExcluded(?int $storeId = null): bool
+    {
+        return $this->scopeConfig->isSetFlag(self::XML_PATH_SEO_CONFIGURATION_EXCLUDE_STORE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $storeId);
     }
 }

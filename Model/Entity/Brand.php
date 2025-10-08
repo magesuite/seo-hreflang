@@ -1,27 +1,17 @@
 <?php
+
 declare(strict_types=1);
 
 namespace MageSuite\SeoHreflang\Model\Entity;
 
 class Brand implements EntityInterface
 {
-    const BRANDS_FULL_ACTION_NAME = 'brands_index_all';
-    const BRAND_REGISTRY_KEY = 'current_brand';
+    public const BRANDS_FULL_ACTION_NAME = 'brands_index_all';
+    public const BRAND_REGISTRY_KEY = 'current_brand';
 
-    /**
-     * @var \MageSuite\BrandManagement\Helper\Configuration
-     */
-    protected $configuration;
-
-    /**
-     * @var \Magento\Framework\App\RequestInterface
-     */
-    protected $request;
-
-    /**
-     * @var \Magento\Framework\Registry
-     */
-    protected $registry;
+    protected \MageSuite\BrandManagement\Helper\Configuration $configuration;
+    protected \Magento\Framework\App\RequestInterface $request;
+    protected \Magento\Framework\Registry $registry;
 
     public function __construct(
         \MageSuite\BrandManagement\Helper\Configuration $configuration,
