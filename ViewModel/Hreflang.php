@@ -158,9 +158,6 @@ class Hreflang implements \Magento\Framework\View\Element\Block\ArgumentInterfac
         }
 
         $queryValue = array_intersect_key($queryValue, array_flip($this->allowedQueryParameters));
-        if (empty($queryValue)) {
-            return $url;
-        }
 
         return $this->buildUrlWithQuery($url, $queryValue);
     }
@@ -170,6 +167,11 @@ class Hreflang implements \Magento\Framework\View\Element\Block\ArgumentInterfac
         $query = http_build_query($queryValue, '', self::QUERY_SEPARATOR);
         $splitUrl = \Laminas\Uri\UriFactory::factory($url);
         $rawUrl = $splitUrl->getScheme() . '://' . $splitUrl->getHost() . $splitUrl->getPath();
+
+        if (empty($query)) {
+            return trim($rawUrl, '/');
+        }
+        
         $urlWithQuery = sprintf('%s?%s', $rawUrl, $query);
         $url = $this->urlBuilder->getUrl($urlWithQuery);
 
