@@ -9,6 +9,7 @@
                 <hide_for_noindex>0</hide_for_noindex>
                 <strip_parameters_from_the_url>0</strip_parameters_from_the_url>
                 <exclude_store>0</exclude_store>
+                <remove_trailing_slash>1</remove_trailing_slash>
             </configuration>
         </seo>
     </default>
