@@ -13,13 +13,11 @@ class Configuration
     public const XML_PATH_SEO_CONFIGURATION_HIDE_FOR_NOINDEX = 'seo/configuration/hide_for_noindex';
     public const XML_PATH_SEO_CONFIGURATION_STRIP_PARAMETERS_FROM_THE_URL = 'seo/configuration/strip_parameters_from_the_url';
     public const XML_PATH_SEO_CONFIGURATION_EXCLUDE_STORE = 'seo/configuration/exclude_store';
+    public const XML_PATH_SEO_CONFIGURATION_REMOVE_TRAILING_SLASH = 'seo/configuration/remove_trailing_slash';
 
-    protected \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig;
-
-    public function __construct(\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig)
-    {
-        $this->scopeConfig = $scopeConfig;
-    }
+    public function __construct(
+        protected \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+    ) {}
 
     public function isEnabled(): bool
     {
@@ -54,5 +52,10 @@ class Configuration
     public function isStoreExcluded(?int $storeId = null): bool
     {
         return $this->scopeConfig->isSetFlag(self::XML_PATH_SEO_CONFIGURATION_EXCLUDE_STORE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $storeId);
+    }
+
+    public function isRemovingTrailingSlashEnabled(?int $storeId = null): bool
+    {
+        return $this->scopeConfig->isSetFlag(self::XML_PATH_SEO_CONFIGURATION_REMOVE_TRAILING_SLASH, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, $storeId);
     }
 }

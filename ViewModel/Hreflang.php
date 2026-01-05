@@ -9,35 +9,16 @@ class Hreflang implements \Magento\Framework\View\Element\Block\ArgumentInterfac
     public const X_DEFAULT = 'x-default';
     public const QUERY_SEPARATOR = '&amp;';
 
-    protected \Magento\Store\Model\StoreManagerInterface $storeManager;
-    protected \Magento\Framework\UrlInterface $urlBuilder;
-    protected \Magento\Framework\App\RequestInterface $request;
-    protected \Magento\Framework\View\Page\Config $pageConfig;
-    protected \MageSuite\SeoHreflang\Helper\Configuration $configuration;
-    protected \MageSuite\SeoHreflang\Model\EntityPool $entityPool;
-    protected \MageSuite\SeoCanonical\Helper\Configuration $canonicalConfiguration;
-
-    protected array $allowedQueryParameters = [];
-
     public function __construct(
-        \Magento\Store\Model\StoreManagerInterface $storeManager,
-        \Magento\Framework\UrlInterface $urlBuilder,
-        \Magento\Framework\App\RequestInterface $request,
-        \Magento\Framework\View\Page\Config $pageConfig,
-        \MageSuite\SeoHreflang\Helper\Configuration $configuration,
-        \MageSuite\SeoHreflang\Model\EntityPool $entityPool,
-        \MageSuite\SeoCanonical\Helper\Configuration $canonicalConfiguration,
-        array $allowedQueryParameters = []
-    ) {
-        $this->storeManager = $storeManager;
-        $this->urlBuilder = $urlBuilder;
-        $this->request = $request;
-        $this->pageConfig = $pageConfig;
-        $this->configuration = $configuration;
-        $this->entityPool = $entityPool;
-        $this->canonicalConfiguration = $canonicalConfiguration;
-        $this->allowedQueryParameters = $allowedQueryParameters;
-    }
+        protected \Magento\Store\Model\StoreManagerInterface $storeManager,
+        protected \Magento\Framework\UrlInterface $urlBuilder,
+        protected \Magento\Framework\App\RequestInterface $request,
+        protected \Magento\Framework\View\Page\Config $pageConfig,
+        protected \MageSuite\SeoHreflang\Helper\Configuration $configuration,
+        protected \MageSuite\SeoHreflang\Model\EntityPool $entityPool,
+        protected \MageSuite\SeoCanonical\Helper\Configuration $canonicalConfiguration,
+        protected array $allowedQueryParameters = [],
+    ) {}
 
     public function getAlternateLinks(): array
     {
@@ -169,9 +150,9 @@ class Hreflang implements \Magento\Framework\View\Element\Block\ArgumentInterfac
         $rawUrl = $splitUrl->getScheme() . '://' . $splitUrl->getHost() . $splitUrl->getPath();
 
         if (empty($query)) {
-            return trim($rawUrl, '/');
+            return $this->configuration->isRemovingTrailingSlashEnabled() ? trim($rawUrl, '/') : $rawUrl;
         }
-        
+
         $urlWithQuery = sprintf('%s?%s', $rawUrl, $query);
         $url = $this->urlBuilder->getUrl($urlWithQuery);
 
