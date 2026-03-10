@@ -8,8 +8,8 @@
             <label>SEO</label>
             <tab>magesuite</tab>
             <resource>MageSuite_SeoHreflang::config_seo</resource>
-            <group id="configuration" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Configuration</label>
+            <group id="hreflang" translate="label" type="text" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Hreflang</label>
                 <field id="hreflang_tags_enabled" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
                     <label>Hreflang Tags</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
@@ -22,6 +22,13 @@
                     <source_model>MageSuite\SeoHreflang\Model\Config\Source\HreflangScope</source_model>
                     <comment>
                         <![CDATA[Global - hreflang links will be displayed for all store views from all websites.<br/>Store Group - hreflang links will be displayed only for store views from current store group.]]>
+                    </comment>
+                </field>
+                <field id="hreflang_disable_on_non_canonical" translate="label" type="select" sortOrder="25" showInDefault="1" showInWebsite="0" showInStore="0" canRestore="1">
+                    <label>Disable hreflang on non canonical page</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>
+                        <![CDATA[Prevents hreflang tags from being rendered on non-canonical pages such as filtered or parameterized URLs.]]>
                     </comment>
                 </field>
                 <field id="x_default" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
@@ -39,7 +46,7 @@
                 <field id="strip_parameters_from_the_url" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Strip parameters from the URL</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment><![CDATA[When enabled URL parameters will be stripped from the URL in hreflang tags.]]></comment>
+                    <comment><![CDATA[When enabled URL parameters will be stripped from the URL in hreflang tags. Only pagination parameter is allowed, if it is enabled for canonical tag.]]></comment>
                 </field>
                 <field id="exclude_store" translate="label" type="select" sortOrder="60" showInDefault="0" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Exclude store</label>

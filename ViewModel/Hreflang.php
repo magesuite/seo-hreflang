@@ -17,11 +17,19 @@ class Hreflang implements \Magento\Framework\View\Element\Block\ArgumentInterfac
         protected \MageSuite\SeoHreflang\Helper\Configuration $configuration,
         protected \MageSuite\SeoHreflang\Model\EntityPool $entityPool,
         protected \MageSuite\SeoCanonical\Helper\Configuration $canonicalConfiguration,
+        protected \MageSuite\SeoCanonical\Service\CanonicalUrl $canonicalService,
         protected array $allowedQueryParameters = [],
     ) {}
 
     public function getAlternateLinks(): array
     {
+        if (
+            $this->configuration->isHreflangDisabledOnNonCanonicalPages() &&
+            ! $this->canonicalService->isCanonicalPage()
+        ) {
+            return [];
+        }
+
         /** @var \MageSuite\SeoHreflang\Model\Entity\EntityInterface $entity */
         $entity = $this->entityPool->getEntity();
 
@@ -53,6 +61,10 @@ class Hreflang implements \Magento\Framework\View\Element\Block\ArgumentInterfac
 
     public function isApplicable(\MageSuite\SeoHreflang\Model\Entity\EntityInterface $entity, \Magento\Store\Api\Data\StoreInterface $store): bool
     {
+        if (!$this->configuration->isEnabled()) {
+            return false;
+        }
+
         if (!$store->getIsActive()) {
             return false;
         }
@@ -62,10 +74,6 @@ class Hreflang implements \Magento\Framework\View\Element\Block\ArgumentInterfac
         }
 
         if (!$entity->isActive($store)) {
-            return false;
-        }
-
-        if (!$this->configuration->isEnabled()) {
             return false;
         }
 
@@ -134,7 +142,7 @@ class Hreflang implements \Magento\Framework\View\Element\Block\ArgumentInterfac
             return $this->buildUrlWithQuery($url, $queryValue);
         }
 
-        if (!$this->canonicalConfiguration->isCanonicalForPaginatedPagesEnabled() || !$this->canonicalConfiguration->isCanonicalPageParamEnabled()) {
+        if (!$this->canonicalConfiguration->isCanonicalForPaginatedPagesEnabled()) {
             return $url;
         }
 

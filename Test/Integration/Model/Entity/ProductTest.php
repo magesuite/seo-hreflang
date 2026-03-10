@@ -1,46 +1,24 @@
 <?php
+
+declare(strict_types=1);
+
 namespace MageSuite\SeoHreflang\Test\Integration\Model\Entity;
 
 class ProductTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @var \Magento\TestFramework\ObjectManager
-     */
-    protected $objectManager;
-
-    /**
-     * @var \Magento\Framework\Registry
-     */
-    protected $registry;
-
-    /**
-     * @var \Magento\Store\Model\Store
-     */
-    protected $store;
-
-    /**
-     * @var \Magento\Catalog\Api\ProductRepositoryInterface
-     */
-    protected $productRepository;
-
-    /**
-     * @var \MageSuite\SeoHreflang\Model\Entity\Product
-     */
-    protected $productEntity;
-
-    /**
-     * @var \Magento\Framework\App\Request\Http
-     */
-    protected $request;
+    protected ?\Magento\TestFramework\ObjectManager $objectManager;
+    protected ?\Magento\Framework\Registry $registry;
+    protected ?\Magento\Store\Model\Store $store;
+    protected ?\Magento\Catalog\Api\ProductRepositoryInterface $productRepository;
+    protected ?\MageSuite\SeoHreflang\Model\Entity\Product $productEntity;
+    protected ?\Magento\Framework\App\Request\Http $request;
 
     public function setUp(): void
     {
         $this->objectManager = \Magento\TestFramework\ObjectManager::getInstance();
-
         $this->registry = $this->objectManager->get(\Magento\Framework\Registry::class);
         $this->store = $this->objectManager->create(\Magento\Store\Model\Store::class);
         $this->productRepository = $this->objectManager->get(\Magento\Catalog\Api\ProductRepositoryInterface::class);
-
         $this->productEntity = $this->objectManager->get(\MageSuite\SeoHreflang\Model\Entity\Product::class);
         $this->request = $this->objectManager->get(\Magento\Framework\App\Request\Http::class);
     }
@@ -49,7 +27,7 @@ class ProductTest extends \PHPUnit\Framework\TestCase
      * @magentoDbIsolation enabled
      * @magentoDataFixture MageSuite_SeoHreflang::Test/Integration/_files/products.php
      */
-    public function testItReturnsCorrectData()
+    public function testItReturnsCorrectData(): void
     {
         $activeProduct = $this->productRepository->get('active_product');
         $disabledProduct = $this->productRepository->get('disabled_product');
@@ -74,7 +52,7 @@ class ProductTest extends \PHPUnit\Framework\TestCase
      * @magentoDbIsolation enabled
      * @magentoDataFixture MageSuite_SeoHreflang::Test/Integration/_files/product_url_rewrite.php
      */
-    public function testItReturnsCorrectUrl()
+    public function testItReturnsCorrectUrl(): void
     {
         $this->request->setPathInfo('catalog/product/view/id/100');
 
@@ -91,7 +69,7 @@ class ProductTest extends \PHPUnit\Framework\TestCase
      * @magentoDbIsolation enabled
      * @magentoDataFixture MageSuite_SeoHreflang::Test/Integration/_files/product_url_rewrite.php
      */
-    public function testItThrowsExceptionWhenStoreIsNotSet()
+    public function testItThrowsExceptionWhenStoreIsNotSet(): void
     {
         try {
             $this->store->setId(3);

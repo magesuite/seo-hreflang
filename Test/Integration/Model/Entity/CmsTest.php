@@ -1,27 +1,18 @@
 <?php
+
+declare(strict_types=1);
+
 namespace MageSuite\SeoHreflang\Test\Integration\Model\Entity;
 
 class CmsTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @var \Magento\TestFramework\ObjectManager
-     */
-    protected $objectManager;
-
-    /**
-     * @var \Magento\Store\Model\Store
-     */
-    protected $store;
-
-    /**
-     * @var \Magento\Cms\Api\PageRepositoryInterface
-     */
-    protected $pageRepository;
+    protected ?\Magento\TestFramework\ObjectManager $objectManager;
+    protected ?\Magento\Store\Model\Store $store;
+    protected ?\Magento\Cms\Api\PageRepositoryInterface $pageRepository;
 
     public function setUp(): void
     {
         $this->objectManager = \Magento\TestFramework\ObjectManager::getInstance();
-
         $this->store = $this->objectManager->create(\Magento\Store\Model\Store::class);
         $this->pageRepository = $this->objectManager->get(\Magento\Cms\Api\PageRepositoryInterface::class);
     }
@@ -30,7 +21,7 @@ class CmsTest extends \PHPUnit\Framework\TestCase
      * @magentoDbIsolation enabled
      * @magentoDataFixture MageSuite_SeoHreflang::Test/Integration/_files/pages.php
      */
-    public function testItReturnsCorrectData()
+    public function testItReturnsCorrectData(): void
     {
         $cmsPageEntity = $this->objectManager->create(\MageSuite\SeoHreflang\Model\Entity\CmsPage::class);
         $this->assertFalse($cmsPageEntity->isApplicable());

@@ -1,37 +1,17 @@
 <?php
+
+declare(strict_types=1);
+
 namespace MageSuite\SeoHreflang\Test\Integration\Model\Entity;
 
 class CategoryTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @var \Magento\TestFramework\ObjectManager
-     */
-    protected $objectManager;
-
-    /**
-     * @var \Magento\Framework\Registry
-     */
-    protected $registry;
-
-    /**
-     * @var \Magento\Store\Model\Store
-     */
-    protected $store;
-
-    /**
-     * @var \Magento\Catalog\Api\CategoryRepositoryInterface
-     */
-    protected $categoryRepository;
-
-    /**
-     * @var \MageSuite\SeoHreflang\Model\Entity\Category
-     */
-    protected $categoryEntity;
-
-    /**
-     * @var \Magento\Framework\App\Request\Http
-     */
-    protected $request;
+    protected ?\Magento\TestFramework\ObjectManager $objectManager;
+    protected ?\Magento\Framework\Registry $registry;
+    protected ?\Magento\Store\Model\Store $store;
+    protected ?\Magento\Catalog\Api\CategoryRepositoryInterface $categoryRepository;
+    protected ?\MageSuite\SeoHreflang\Model\Entity\Category $categoryEntity;
+    protected ?\Magento\Framework\App\Request\Http $request;
 
     public function setUp(): void
     {
@@ -49,7 +29,7 @@ class CategoryTest extends \PHPUnit\Framework\TestCase
      * @magentoDbIsolation enabled
      * @magentoDataFixture MageSuite_SeoHreflang::Test/Integration/_files/categories.php
      */
-    public function testItReturnsCorrectData()
+    public function testItReturnsCorrectData(): void
     {
         $activeCategory = $this->categoryRepository->get(333);
         $disabledCategory = $this->categoryRepository->get(334);
@@ -72,7 +52,7 @@ class CategoryTest extends \PHPUnit\Framework\TestCase
      * @magentoDbIsolation enabled
      * @magentoDataFixture MageSuite_SeoHreflang::Test/Integration/_files/category_url_rewrite.php
      */
-    public function testItReturnsCorrectUrl()
+    public function testItReturnsCorrectUrl(): void
     {
         $this->request->setPathInfo('catalog/category/view/id/100');
 
@@ -89,7 +69,7 @@ class CategoryTest extends \PHPUnit\Framework\TestCase
      * @magentoDbIsolation enabled
      * @magentoDataFixture MageSuite_SeoHreflang::Test/Integration/_files/category_url_rewrite.php
      */
-    public function testItThrowsExceptionWhenStoreIsNotSet()
+    public function testItThrowsExceptionWhenStoreIsNotSet(): void
     {
         try {
             $this->store->setId(3);

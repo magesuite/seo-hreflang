@@ -2,15 +2,16 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
         <seo>
-            <configuration>
+            <hreflang>
                 <hreflang_tags_enabled>0</hreflang_tags_enabled>
                 <hreflang_scope>global</hreflang_scope>
+                <hreflang_disable_on_non_canonical>0</hreflang_disable_on_non_canonical>
                 <x_default>-1</x_default>
                 <hide_for_noindex>0</hide_for_noindex>
                 <strip_parameters_from_the_url>0</strip_parameters_from_the_url>
                 <exclude_store>0</exclude_store>
                 <remove_trailing_slash>1</remove_trailing_slash>
-            </configuration>
+            </hreflang>
         </seo>
     </default>
 </config>
