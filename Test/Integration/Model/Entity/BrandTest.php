@@ -1,38 +1,23 @@
 <?php
+
+declare(strict_types=1);
+
 namespace MageSuite\SeoHreflang\Test\Integration\Model\Entity;
 
 class BrandTest extends \PHPUnit\Framework\TestCase
 {
-    /**
-     * @var \Magento\TestFramework\ObjectManager
-     */
-    protected $objectManager;
-
-    /**
-     * @var \Magento\Framework\Registry
-     */
-    protected $registry;
-
-    /**
-     * @var \Magento\Store\Model\StoreManagerInterface
-     */
-    protected $storeManager;
-
-    /**
-     * @var \MageSuite\BrandManagement\Api\BrandsRepositoryInterface
-     */
-    protected $brandRepository;
-
-    /**
-     * @var \MageSuite\SeoHreflang\Model\Entity\Brand
-     */
-    protected $brandEntity;
+    protected ?\Magento\TestFramework\ObjectManager $objectManager;
+    protected ?\Magento\Framework\Registry $registry;
+    protected ?\Magento\Store\Model\StoreManagerInterface $storeManager;
+    protected ?\MageSuite\BrandManagement\Api\BrandsRepositoryInterface $brandRepository;
+    protected ?\MageSuite\SeoHreflang\Model\Entity\Brand $brandEntity;
 
     public function setUp(): void
     {
         if (!interface_exists('MageSuite\BrandManagement\Api\BrandsRepositoryInterface')) {
             $this->markTestSkipped('Skipped because Brand Management module is not present');
         }
+
         $this->objectManager = \Magento\TestFramework\ObjectManager::getInstance();
         $this->registry = $this->objectManager->get(\Magento\Framework\Registry::class);
         $this->storeManager = $this->objectManager->get(\Magento\Store\Model\StoreManagerInterface::class);
@@ -46,7 +31,7 @@ class BrandTest extends \PHPUnit\Framework\TestCase
      * @magentoConfigFixture default_store web/url/use_store 1
      * @magentoConfigFixture second_store web/url/use_store 1
      */
-    public function testItReturnsCorrectData()
+    public function testItReturnsCorrectData(): void
     {
         $store = $this->storeManager->getStore('default');
 
