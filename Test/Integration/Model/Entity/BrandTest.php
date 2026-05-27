@@ -43,11 +43,11 @@ class BrandTest extends \PHPUnit\Framework\TestCase
 
         $this->assertTrue($this->brandEntity->isApplicable());
         $this->assertTrue($this->brandEntity->isActive($store));
-        $this->assertEquals('http://localhost/index.php/default/brands/enabled-brand', $this->brandEntity->getUrl($store));
+        $this->assertEquals('http://localhost/index.php/brands/enabled-brand', $this->brandEntity->getUrl($store));
 
         $secondStore = $this->storeManager->getStore('second');
 
-        $this->assertEquals('http://localhost/index.php/second/brands/enabled-brand', $this->brandEntity->getUrl($secondStore));
+        $this->assertEquals('http://localhost/index.php/brands/enabled-brand', $this->brandEntity->getUrl($secondStore));
 
         $this->registry->unregister('current_brand');
 
