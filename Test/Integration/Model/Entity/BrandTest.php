@@ -28,6 +28,7 @@ class BrandTest extends \PHPUnit\Framework\TestCase
     /**
      * @magentoDbIsolation enabled
      * @magentoDataFixture MageSuite_SeoHreflang::Test/Integration/_files/brands.php
+     * @magentoConfigFixture web/url/use_store 1
      * @magentoConfigFixture default_store web/url/use_store 1
      * @magentoConfigFixture second_store web/url/use_store 1
      */
