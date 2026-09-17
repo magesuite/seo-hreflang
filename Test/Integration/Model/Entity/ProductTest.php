@@ -69,14 +69,28 @@ class ProductTest extends \PHPUnit\Framework\TestCase
      * @magentoDbIsolation enabled
      * @magentoDataFixture MageSuite_SeoHreflang::Test/Integration/_files/product_url_rewrite.php
      */
-    public function testItThrowsExceptionWhenStoreIsNotSet(): void
+    public function testItReturnsEmptyUrlWhenUrlRewriteIsMissing(): void
     {
-        try {
-            $this->store->setId(3);
-            $this->productEntity->getUrl($this->store);
-            $this->fail();
-        } catch (\Exception $e) {
-            $this->assertEquals('The store that was requested wasn\'t found. Verify the store and try again.', $e->getMessage());
-        }
+        $this->request->setPathInfo('catalog/product/view/id/100');
+
+        $this->store->setId(3);
+
+        $this->assertSame('', $this->productEntity->getUrl($this->store));
+    }
+
+    /**
+     * @magentoDbIsolation enabled
+     * @magentoDataFixture MageSuite_SeoHreflang::Test/Integration/_files/product_url_rewrite.php
+     */
+    public function testItStillFallsBackToCurrentUrlForCurrentStore(): void
+    {
+        $this->request->setPathInfo('catalog/product/view/id/999999');
+
+        $currentStore = $this->objectManager
+            ->get(\Magento\Store\Model\StoreManagerInterface::class)
+            ->getStore();
+        $this->store->setId((int)$currentStore->getId());
+
+        $this->assertNotSame('', $this->productEntity->getUrl($this->store));
     }
 }

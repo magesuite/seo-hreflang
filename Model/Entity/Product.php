@@ -9,7 +9,8 @@ class Product implements EntityInterface
     public function __construct(
         protected \Magento\UrlRewrite\Model\UrlFinderInterface $urlFinder,
         protected \Magento\Framework\App\RequestInterface $request,
-        protected \Magento\Framework\Registry $registry
+        protected \Magento\Framework\Registry $registry,
+        protected \Magento\Store\Model\StoreManagerInterface $storeManager
     ) {
     }
 
@@ -48,7 +49,16 @@ class Product implements EntityInterface
             return $store->getBaseUrl() . $urlRewrite->getRequestPath();
         }
 
-        return $store->getCurrentUrl(false);
+        if ($this->isCurrentStore($store)) {
+            return $store->getCurrentUrl(false);
+        }
+
+        return '';
+    }
+
+    protected function isCurrentStore(\Magento\Store\Api\Data\StoreInterface $store): bool
+    {
+        return (int)$store->getId() === (int)$this->storeManager->getStore()->getId();
     }
 
     public function getProduct(): ?\Magento\Catalog\Model\Product

@@ -69,14 +69,28 @@ class CategoryTest extends \PHPUnit\Framework\TestCase
      * @magentoDbIsolation enabled
      * @magentoDataFixture MageSuite_SeoHreflang::Test/Integration/_files/category_url_rewrite.php
      */
-    public function testItThrowsExceptionWhenStoreIsNotSet(): void
+    public function testItReturnsEmptyUrlWhenUrlRewriteIsMissing(): void
     {
-        try {
-            $this->store->setId(3);
-            $this->categoryEntity->getUrl($this->store);
-            $this->fail();
-        } catch (\Exception $e) {
-            $this->assertEquals('The store that was requested wasn\'t found. Verify the store and try again.', $e->getMessage());
-        }
+        $this->request->setPathInfo('catalog/category/view/id/100');
+
+        $this->store->setId(3);
+
+        $this->assertSame('', $this->categoryEntity->getUrl($this->store));
+    }
+
+    /**
+     * @magentoDbIsolation enabled
+     * @magentoDataFixture MageSuite_SeoHreflang::Test/Integration/_files/category_url_rewrite.php
+     */
+    public function testItStillFallsBackToCurrentUrlForCurrentStore(): void
+    {
+        $this->request->setPathInfo('catalog/category/view/id/999999');
+
+        $currentStore = $this->objectManager
+            ->get(\Magento\Store\Model\StoreManagerInterface::class)
+            ->getStore();
+        $this->store->setId((int)$currentStore->getId());
+
+        $this->assertNotSame('', $this->categoryEntity->getUrl($this->store));
     }
 }

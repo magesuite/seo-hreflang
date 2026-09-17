@@ -9,15 +9,18 @@ class Category implements EntityInterface
     protected \Magento\UrlRewrite\Model\UrlFinderInterface $urlFinder;
     protected \Magento\Framework\App\RequestInterface $request;
     protected \Magento\Framework\Registry $registry;
+    protected \Magento\Store\Model\StoreManagerInterface $storeManager;
 
     public function __construct(
         \Magento\UrlRewrite\Model\UrlFinderInterface $urlFinder,
         \Magento\Framework\App\RequestInterface $request,
-        \Magento\Framework\Registry $registry
+        \Magento\Framework\Registry $registry,
+        \Magento\Store\Model\StoreManagerInterface $storeManager
     ) {
         $this->urlFinder = $urlFinder;
         $this->request = $request;
         $this->registry = $registry;
+        $this->storeManager = $storeManager;
     }
 
     public function isApplicable(): bool
@@ -50,7 +53,16 @@ class Category implements EntityInterface
             return $store->getBaseUrl() . $urlRewrite->getRequestPath();
         }
 
-        return $store->getCurrentUrl(false);
+        if ($this->isCurrentStore($store)) {
+            return $store->getCurrentUrl(false);
+        }
+
+        return '';
+    }
+
+    protected function isCurrentStore(\Magento\Store\Api\Data\StoreInterface $store): bool
+    {
+        return (int)$store->getId() === (int)$this->storeManager->getStore()->getId();
     }
 
     public function getCategory(): ?\Magento\Catalog\Model\Category
