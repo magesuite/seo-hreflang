@@ -19,6 +19,7 @@ class Hreflang implements \Magento\Framework\View\Element\Block\ArgumentInterfac
         protected \MageSuite\SeoCanonical\Helper\Configuration $canonicalConfiguration,
         protected \MageSuite\SeoCanonical\Service\CanonicalUrl $canonicalService,
         protected array $allowedQueryParameters = [],
+        protected array $excludedQueryParameters = [],
     ) {}
 
     public function getAlternateLinks(): array
@@ -137,6 +138,7 @@ class Hreflang implements \Magento\Framework\View\Element\Block\ArgumentInterfac
     public function addQueryToUrl(string $url): string
     {
         $queryValue = $this->request->getQueryValue();
+        $queryValue = array_diff_key($queryValue, array_flip($this->excludedQueryParameters));
 
         if (!$this->configuration->shouldStripParametersFromUrl()) {
             return $this->buildUrlWithQuery($url, $queryValue);
